@@ -65,7 +65,7 @@ export function Navbar() {
               <Button
                 key={route.href}
                 variant="ghost"
-                size="nav"
+                size="default"
                 className="text-sm font-medium transition-colors"
                 asChild
               >
