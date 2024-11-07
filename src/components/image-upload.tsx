@@ -68,13 +68,14 @@ export function ImageUpload({ onSuccess }: ImageUploadProps) {
       const fileExt = file.name.split('.').pop()
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
 
+      // Create upload options with proper progress tracking
       const options = {
         cacheControl: '3600',
         upsert: false,
-        onProgress: (progress: { transferred: number; total?: number }) => {
+        onProgress: (progress: { transferred: number; total: number }) => {
           if (progress.total) {
             const percent = (progress.transferred / progress.total) * 100
-            setUploadProgress(percent)
+            setUploadProgress(Math.min(percent, 99)) // Keep at 99% until fully complete
           }
         }
       }
@@ -85,9 +86,10 @@ export function ImageUpload({ onSuccess }: ImageUploadProps) {
         .upload(fileName, file, options)
 
       if (uploadError) {
-        console.error('Storage upload error:', uploadError)
         throw new Error(`Upload error: ${uploadError.message}`)
       }
+
+      setUploadProgress(100) // Set to 100% after successful upload
 
       // Get public URL
       const { data } = await supabase.storage
@@ -98,17 +100,16 @@ export function ImageUpload({ onSuccess }: ImageUploadProps) {
         throw new Error('Failed to get public URL')
       }
 
-      // Insert into database - using the correct column name from types
+      // Insert into database
       const { error: dbError } = await supabase
         .from('carousel_items')
         .insert({
           title,
-          imageUrl: data.publicUrl,  // Changed from imageurl to imageUrl to match types
+          imageUrl: data.publicUrl,
           likes: 0
         })
 
       if (dbError) {
-        console.error('Database insert error:', dbError)
         throw new Error(`Database error: ${dbError.message}`)
       }
 
@@ -116,18 +117,19 @@ export function ImageUpload({ onSuccess }: ImageUploadProps) {
       setTitle('')
       setFile(null)
       setPreview(null)
-      setUploadProgress(0)
       
-      alert('Image uploaded successfully!')
-      
-      // Call the onSuccess callback to close the sheet
+      // Call onSuccess before alert
       onSuccess?.()
+
+      // Show success message
+      alert('Image uploaded successfully!')
 
     } catch (error) {
       console.error('Error uploading file:', error)
       alert(error instanceof Error ? error.message : 'Failed to upload image. Please try again.')
     } finally {
       setUploading(false)
+      setUploadProgress(0)
     }
   }
 
@@ -144,6 +146,21 @@ export function ImageUpload({ onSuccess }: ImageUploadProps) {
         />
       </div>
       
+      <Button 
+        onClick={handleUpload} 
+        disabled={uploading || !file || !title}
+        className="w-full sticky top-4 z-20"
+      >
+        {uploading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Uploading
+          </>
+        ) : (
+          'Upload Image'
+        )}
+      </Button>
+
       <div className="space-y-2">
         {!preview ? (
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
@@ -197,21 +214,6 @@ export function ImageUpload({ onSuccess }: ImageUploadProps) {
           </p>
         </div>
       )}
-
-      <Button 
-        onClick={handleUpload} 
-        disabled={uploading || !file || !title}
-        className="w-full"
-      >
-        {uploading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Uploading
-          </>
-        ) : (
-          'Upload Image'
-        )}
-      </Button>
     </div>
   )
 }

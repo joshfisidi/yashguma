@@ -59,14 +59,18 @@ const Home: FC = () => {
         <SheetTrigger asChild>
           <Button variant="outline">Add New Image</Button>
         </SheetTrigger>
-        <SheetContent side="top">
-          <SheetHeader>
+        <SheetContent 
+          side="top" 
+          className="h-[90vh] overflow-y-auto"
+          onPointerDownOutside={() => setOpen(false)}
+        >
+          <SheetHeader className="sticky top-0 bg-background z-10 pb-4">
             <SheetTitle>Add New Image</SheetTitle>
             <SheetDescription>
               Upload a new image to your carousel. Images will appear in the carousel after upload.
             </SheetDescription>
           </SheetHeader>
-          <div className="mt-6">
+          <div className="pb-20 pt-4">
             <ImageUpload onSuccess={handleUploadSuccess} />
           </div>
         </SheetContent>

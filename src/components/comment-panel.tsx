@@ -23,7 +23,7 @@ export const CommentPanel: FC<CommentPanelProps> = ({
   onCommentSubmit
 }) => {
   return (
-    <div className="w-full max-w-md space-y-4 bg-background rounded-lg shadow-lg border p-6">
+    <div className="w-full max-w-md space-y-4 bg-background rounded-lg shadow-lg border p-6 animate-in fade-in-0 zoom-in-95 duration-200">
       <div className="flex items-center gap-2">
         <MessageCircle className="h-5 w-5" />
         <h3 className="text-lg font-semibold">Comments</h3>
