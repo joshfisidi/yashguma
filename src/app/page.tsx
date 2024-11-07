@@ -1,6 +1,6 @@
 "use client"
 
-import { type FC, useState } from 'react';
+import { type FC, useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -18,14 +18,31 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { Bold, Heart, Italic, Underline } from "lucide-react"
+import { Bold, Heart, Italic, Underline, MessageCircle } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 import { useCarouselItems } from '@/hooks/useCarouselItems'
 import { ImageUpload } from '@/components/image-upload'
+import { CarouselControls } from '@/components/carousel-controls'
+import { type CarouselApi } from "@/components/ui/carousel"
+import { CommentPanel } from '@/components/comment-panel'
 
 const Home: FC = () => {
-  const { items, loading, fetchItems } = useCarouselItems()
+  const { items, loading, fetchItems, handleLike, handleComment } = useCarouselItems()
   const [open, setOpen] = useState(false)
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [api, setApi] = useState<CarouselApi>()
+  const [comment, setComment] = useState("")
+  const [showComments, setShowComments] = useState(false)
+
+  useEffect(() => {
+    if (!api) return
+    
+    api.on('select', () => {
+      const newIndex = api.selectedScrollSnap()
+      setCurrentIndex(newIndex)
+      setComment("")
+    })
+  }, [api])
 
   const handleUploadSuccess = () => {
     setOpen(false)
@@ -55,7 +72,7 @@ const Home: FC = () => {
         </SheetContent>
       </Sheet>
 
-      <Carousel className="w-full max-w-xs">
+      <Carousel className="w-full max-w-xs" setApi={setApi}>
         <CarouselContent>
           {items.map((item) => (
             <CarouselItem key={item.id}>
@@ -66,15 +83,6 @@ const Home: FC = () => {
                     alt={item.title}
                     className="object-cover w-full h-full rounded-md"
                   />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute bottom-2 right-2 bg-white/50 hover:bg-white/75"
-                    onClick={() => handleLike(item.id)}
-                  >
-                    <Heart className="h-4 w-4" />
-                    <span className="ml-1">{item.likes}</span>
-                  </Button>
                 </div>
               </div>
             </CarouselItem>
@@ -84,12 +92,37 @@ const Home: FC = () => {
         <CarouselNext />
       </Carousel>
 
-      <div className="max-w-2xl mx-auto px-4">
-        <Textarea 
-          placeholder="Add a comment about this image..." 
-          className="min-h-[120px]"
-        />
-      </div>
+      <CarouselControls 
+        items={items}
+        currentIndex={currentIndex}
+        onLike={handleLike}
+        onCommentToggle={() => setShowComments(!showComments)}
+        showComments={showComments}
+      />
+
+      {showComments && (
+        <div 
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm"
+          onClick={() => setShowComments(false)}
+        >
+          <div 
+            className="fixed left-1/2 top-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2"
+            onClick={e => e.stopPropagation()}
+          >
+            <CommentPanel
+              comments={items[currentIndex]?.comments || []}
+              comment={comment}
+              onCommentChange={setComment}
+              onCommentSubmit={() => {
+                if (comment.trim()) {
+                  handleComment(items[currentIndex].id, comment)
+                  setComment("")
+                }
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { Menu, Home, User, FolderGit2 } from "lucide-react"
+import { Menu, Home, User, FolderGit2, ImagePlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import {
@@ -9,7 +9,10 @@ import {
   SheetTrigger,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
 } from "@/components/ui/sheet"
+import { ImageUpload } from "@/components/image-upload"
+import { useState } from "react"
 
 const routes = [
   {
@@ -27,58 +30,110 @@ const routes = [
     label: "Projects",
     icon: <FolderGit2 className="h-4 w-4 mr-2" />,
   },
+  {
+    label: "Add Image",
+    icon: <ImagePlus className="h-4 w-4 mr-2" />,
+    sheet: true,
+  }
 ]
 
 export function Navbar() {
+  const [open, setOpen] = useState(false)
+  
+  const handleUploadSuccess = () => {
+    setOpen(false)
+    window.location.reload()
+  }
+
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center justify-between">
+    <header className="sm:flex sm:justify-between py-3 px-4 border-b">
+      <div className="relative px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between w-full">
         <div className="flex items-center">
           <Sheet>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon" className="mr-2">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle menu</span>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
             <SheetContent side="left">
               <SheetHeader>
-                <SheetTitle>Navigation</SheetTitle>
+                <SheetTitle>Menu</SheetTitle>
               </SheetHeader>
-              <nav className="flex flex-col space-y-4 mt-4">
+              <nav className="flex flex-col gap-4 mt-4">
                 {routes.map((route) => (
-                  <a
-                    key={route.href}
-                    href={route.href}
-                    className="text-sm font-medium transition-colors"
-                  >
-                    {route.icon}
-                    {route.label}
-                  </a>
+                  <div key={route.label}>
+                    {route.sheet ? (
+                      <Sheet open={open} onOpenChange={setOpen}>
+                        <SheetTrigger asChild>
+                          <Button variant="ghost" className="w-full justify-start">
+                            {route.icon}
+                            {route.label}
+                          </Button>
+                        </SheetTrigger>
+                        <SheetContent side="top">
+                          <SheetHeader>
+                            <SheetTitle>Add New Image</SheetTitle>
+                            <SheetDescription>
+                              Upload a new image to your carousel. Images will appear in the carousel after upload.
+                            </SheetDescription>
+                          </SheetHeader>
+                          <div className="mt-6">
+                            <ImageUpload onSuccess={handleUploadSuccess} />
+                          </div>
+                        </SheetContent>
+                      </Sheet>
+                    ) : (
+                      <Button variant="ghost" className="w-full justify-start">
+                        {route.icon}
+                        {route.label}
+                      </Button>
+                    )}
+                  </div>
                 ))}
               </nav>
             </SheetContent>
           </Sheet>
-
-          <nav className="hidden md:flex items-center space-x-2">
-            {routes.map((route) => (
-              <Button
-                key={route.href}
-                variant="ghost"
-                size="default"
-                className="text-sm font-medium transition-colors"
-                asChild
-              >
-                <a href={route.href}>
-                  {route.icon}
-                  {route.label}
-                </a>
-              </Button>
-            ))}
-          </nav>
+          <div className="ml-4 md:ml-0">
+            <h1 className="text-xl font-bold">Logo</h1>
+          </div>
         </div>
 
-        <ThemeToggle />
+        <nav className="mx-6 flex items-center space-x-4 lg:space-x-6 hidden md:block">
+          {routes.map((route) => (
+            <div key={route.label} className="inline-block">
+              {route.sheet ? (
+                <Sheet open={open} onOpenChange={setOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="ghost">
+                      {route.icon}
+                      {route.label}
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="top">
+                    <SheetHeader>
+                      <SheetTitle>Add New Image</SheetTitle>
+                      <SheetDescription>
+                        Upload a new image to your carousel. Images will appear in the carousel after upload.
+                      </SheetDescription>
+                    </SheetHeader>
+                    <div className="mt-6">
+                      <ImageUpload onSuccess={handleUploadSuccess} />
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              ) : (
+                <Button variant="ghost">
+                  {route.icon}
+                  {route.label}
+                </Button>
+              )}
+            </div>
+          ))}
+        </nav>
+
+        <div className="flex items-center">
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   )

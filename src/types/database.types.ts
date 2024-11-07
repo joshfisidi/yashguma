@@ -1,3 +1,10 @@
+export type CarouselComment = {
+  id: string
+  item_id: string
+  content: string
+  created_at: string
+}
+
 export type CarouselItem = {
   id: string
   imageUrl: string
@@ -5,6 +12,7 @@ export type CarouselItem = {
   title: string
   description?: string
   created_at: string
+  comments?: CarouselComment[]
 }
 
 export type Database = {
