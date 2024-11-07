@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ImagePlus, X, Loader2 } from "lucide-react"
+import { ImagePlus, Loader2 } from "lucide-react"
 import { supabase } from '@/lib/supabase'
 import Image from 'next/image'
 import { Progress } from "@/components/ui/progress"
@@ -146,21 +146,6 @@ export function ImageUpload({ onSuccess }: ImageUploadProps) {
         />
       </div>
       
-      <Button 
-        onClick={handleUpload} 
-        disabled={uploading || !file || !title}
-        className="w-full sticky top-4 z-20"
-      >
-        {uploading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Uploading
-          </>
-        ) : (
-          'Upload Image'
-        )}
-      </Button>
-
       <div className="space-y-2">
         {!preview ? (
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
@@ -192,16 +177,6 @@ export function ImageUpload({ onSuccess }: ImageUploadProps) {
                 className="object-cover"
               />
             </div>
-            {!uploading && (
-              <Button
-                size="icon"
-                variant="destructive"
-                className="absolute -top-2 -right-2"
-                onClick={clearFile}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            )}
           </div>
         )}
       </div>
@@ -214,6 +189,31 @@ export function ImageUpload({ onSuccess }: ImageUploadProps) {
           </p>
         </div>
       )}
+
+      <div className="flex gap-4">
+        <Button 
+          onClick={handleUpload} 
+          disabled={uploading || !file || !title}
+          className="flex-1"
+        >
+          {uploading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Uploading
+            </>
+          ) : (
+            'Upload Image'
+          )}
+        </Button>
+        <Button 
+          variant="outline" 
+          className="flex-1"
+          onClick={() => onSuccess?.()}
+          disabled={uploading}
+        >
+          Cancel
+        </Button>
+      </div>
     </div>
   )
 }

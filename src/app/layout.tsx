@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Navbar } from "@/components/navbar"
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
+import { BottomNav } from '@/components/bottom-nav'
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -60,8 +61,8 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Navbar />
-            <main>{children}</main>
+            <main className="pb-16">{children}</main>
+            <BottomNav />
           </ThemeProvider>
         </body>
       </html>
