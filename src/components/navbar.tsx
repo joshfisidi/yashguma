@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { Menu, Home, User, FolderGit2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -47,14 +48,14 @@ export function Navbar() {
               </SheetHeader>
               <nav className="flex flex-col space-y-4 mt-4">
                 {routes.map((route) => (
-                  <a
+                  <Link
                     key={route.href}
                     href={route.href}
                     className="text-sm font-medium transition-colors"
                   >
                     {route.icon}
                     {route.label}
-                  </a>
+                  </Link>
                 ))}
               </nav>
             </SheetContent>
@@ -65,14 +66,14 @@ export function Navbar() {
               <Button
                 key={route.href}
                 variant="ghost"
-                size="default"
+                size="sm"
                 className="text-sm font-medium transition-colors"
                 asChild
               >
-                <a href={route.href}>
+                <Link href={route.href}>
                   {route.icon}
                   {route.label}
-                </a>
+                </Link>
               </Button>
             ))}
           </nav>

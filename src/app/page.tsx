@@ -56,12 +56,8 @@ const Home: FC = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-8">
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild>
-          <Button variant="outline">Add New Image</Button>
-        </SheetTrigger>
         <SheetContent side="top" className="h-[90vh] overflow-y-auto">
           <SheetHeader className="sticky top-0 bg-background z-10 pb-4">
-            <SheetTitle>Add New Image</SheetTitle>
             <SheetDescription>
               Upload a new image to your carousel. Images will appear in the carousel after upload.
             </SheetDescription>

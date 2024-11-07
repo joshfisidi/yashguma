@@ -1,5 +1,7 @@
 "use client"
 
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Home, ImagePlus, Heart, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -20,6 +22,7 @@ const routes = [
     icon: Home,
   },
   {
+    href: "#",
     label: "Upload",
     icon: ImagePlus,
     sheet: true,
@@ -37,6 +40,7 @@ const routes = [
 ]
 
 export function BottomNav() {
+  const pathname = usePathname()
   const handleUploadSuccess = () => {
     window.location.reload()
   }
@@ -68,20 +72,19 @@ export function BottomNav() {
                   </SheetContent>
                 </Sheet>
               ) : (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={cn(
-                    "h-12 w-12",
-                    route.href === window.location.pathname && "bg-accent"
-                  )}
-                  asChild
-                >
-                  <a href={route.href}>
+                <Link href={route.href}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={cn(
+                      "h-12 w-12",
+                      pathname === route.href && "bg-accent"
+                    )}
+                  >
                     <route.icon className="h-6 w-6" />
                     <span className="sr-only">{route.label}</span>
-                  </a>
-                </Button>
+                  </Button>
+                </Link>
               )}
             </div>
           ))}

@@ -61,6 +61,7 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <Navbar />
             <main className="pb-16">{children}</main>
             <BottomNav />
           </ThemeProvider>
