@@ -1,8 +1,10 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
 import { CarouselItem } from '@/types/database.types'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+
+const supabase = createClientComponentClient()
 
 export function useCarouselItems() {
   const [items, setItems] = useState<CarouselItem[]>([])

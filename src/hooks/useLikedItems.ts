@@ -1,25 +1,50 @@
+"use client"
+
 import { useState, useEffect } from 'react'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { useAuth } from '@/hooks/useAuth'
 
 export function useLikedItems() {
-  const [likedItems, setLikedItems] = useState<Set<string>>(new Set())
+  const [likedItems, setLikedItems] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
+  const supabase = createClientComponentClient()
+  const { session } = useAuth()
 
   useEffect(() => {
-    // Load liked items from localStorage on mount
-    const saved = localStorage.getItem('likedItems')
-    if (saved) {
-      setLikedItems(new Set(JSON.parse(saved)))
+    let mounted = true
+    const fetchLikedItems = async () => {
+      if (!mounted || !session) return
+      try {
+        const { data, error } = await supabase
+          .from('user_likes')
+          .select('item_id')
+          .eq('user_id', session.user.id)
+        
+        if (error) throw error
+        
+        const likedIds = data.map(like => like.item_id)
+        setLikedItems(likedIds)
+        localStorage.setItem('likedItems', JSON.stringify(likedIds))
+      } catch (error) {
+        console.error('Error fetching liked items:', error)
+      } finally {
+        if (mounted) setLoading(false)
+      }
     }
-  }, [])
 
-  const addLikedItem = (id: string) => {
+    fetchLikedItems()
+    return () => { mounted = false }
+  }, [supabase, session])
+
+  const hasLiked = (itemId: string) => likedItems.includes(itemId)
+
+  const addLikedItem = (itemId: string) => {
     setLikedItems(prev => {
-      const newSet = new Set(prev).add(id)
-      localStorage.setItem('likedItems', JSON.stringify([...newSet]))
-      return newSet
+      const updated = [...prev, itemId]
+      localStorage.setItem('likedItems', JSON.stringify(updated))
+      return updated
     })
   }
 
-  const hasLiked = (id: string) => likedItems.has(id)
-
-  return { addLikedItem, hasLiked }
+  return { likedItems, loading, hasLiked, addLikedItem }
 }

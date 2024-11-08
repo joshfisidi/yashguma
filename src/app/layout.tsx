@@ -70,6 +70,17 @@ export default async function RootLayout({
     )
   } catch (error) {
     console.error('Error:', error)
-    return null
+    return (
+      <html lang="en">
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+        </head>
+        <body>
+          <div className="flex items-center justify-center min-h-screen">
+            <p className="text-red-500">An unexpected error occurred.</p>
+          </div>
+        </body>
+      </html>
+    )
   }
 }

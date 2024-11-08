@@ -8,6 +8,10 @@ export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = React.useState(false)
 
+  const handleThemeChange = React.useCallback(() => {
+    setTheme(theme === "dark" ? "light" : "dark")
+  }, [theme, setTheme])
+
   React.useEffect(() => {
     setMounted(true)
   }, [])
@@ -20,7 +24,7 @@ export function ThemeToggle() {
     <div className="flex items-center pr-2">
       <Switch
         checked={theme === "dark"}
-        onCheckedChange={() => setTheme(theme === "dark" ? "light" : "dark")}
+        onCheckedChange={handleThemeChange}
       />
     </div>
   )

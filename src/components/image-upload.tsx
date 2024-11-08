@@ -4,23 +4,34 @@ import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ImagePlus, Loader2 } from "lucide-react"
-import { supabase } from '@/lib/supabase'
+import { ImagePlus, Loader2, Lock } from "lucide-react"
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import Image from 'next/image'
 import { Progress } from "@/components/ui/progress"
+import { useRouter } from 'next/navigation'
 
 interface ImageUploadProps {
   onSuccess?: () => void
 }
 
 export function ImageUpload({ onSuccess }: ImageUploadProps) {
+  const supabase = createClientComponentClient()
+  const router = useRouter()
+  const [session, setSession] = useState<any>(null)
   const [uploading, setUploading] = useState(false)
   const [title, setTitle] = useState('')
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
 
-  // Create preview URL when file is selected
+  useEffect(() => {
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      setSession(session)
+    }
+    getSession()
+  }, [supabase.auth])
+
   useEffect(() => {
     if (!file) {
       setPreview(null)
@@ -30,37 +41,18 @@ export function ImageUpload({ onSuccess }: ImageUploadProps) {
     const objectUrl = URL.createObjectURL(file)
     setPreview(objectUrl)
 
-    // Cleanup
     return () => URL.revokeObjectURL(objectUrl)
   }, [file])
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]
     if (!selectedFile) return
-
-    // Validate file type
-    if (!selectedFile.type.startsWith('image/')) {
-      alert('Please select an image file')
-      return
-    }
-
-    // Validate file size (e.g., 5MB limit)
-    if (selectedFile.size > 5 * 1024 * 1024) {
-      alert('File size must be less than 5MB')
-      return
-    }
-
     setFile(selectedFile)
-  }
-
-  const clearFile = () => {
-    setFile(null)
-    setPreview(null)
   }
 
   const handleUpload = async () => {
     if (!file || !title) return
-
+    
     try {
       setUploading(true)
       setUploadProgress(0)
@@ -68,19 +60,17 @@ export function ImageUpload({ onSuccess }: ImageUploadProps) {
       const fileExt = file.name.split('.').pop()
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
 
-      // Create upload options with proper progress tracking
       const options = {
         cacheControl: '3600',
         upsert: false,
         onProgress: (progress: { transferred: number; total: number }) => {
           if (progress.total) {
             const percent = (progress.transferred / progress.total) * 100
-            setUploadProgress(Math.min(percent, 99)) // Keep at 99% until fully complete
+            setUploadProgress(Math.min(percent, 99))
           }
         }
       }
 
-      // Upload file to storage
       const { error: uploadError } = await supabase.storage
         .from('carousel-images')
         .upload(fileName, file, options)
@@ -89,9 +79,8 @@ export function ImageUpload({ onSuccess }: ImageUploadProps) {
         throw new Error(`Upload error: ${uploadError.message}`)
       }
 
-      setUploadProgress(100) // Set to 100% after successful upload
+      setUploadProgress(100)
 
-      // Get public URL
       const { data } = await supabase.storage
         .from('carousel-images')
         .getPublicUrl(fileName)
@@ -100,7 +89,6 @@ export function ImageUpload({ onSuccess }: ImageUploadProps) {
         throw new Error('Failed to get public URL')
       }
 
-      // Insert into database
       const { error: dbError } = await supabase
         .from('carousel_items')
         .insert({
@@ -113,24 +101,35 @@ export function ImageUpload({ onSuccess }: ImageUploadProps) {
         throw new Error(`Database error: ${dbError.message}`)
       }
 
-      // Reset form
       setTitle('')
       setFile(null)
       setPreview(null)
       
-      // Call onSuccess before alert
-      onSuccess?.()
-
-      // Show success message
-      alert('Image uploaded successfully!')
-
+      if (onSuccess) {
+        onSuccess()
+      }
     } catch (error) {
-      console.error('Error uploading file:', error)
-      alert(error instanceof Error ? error.message : 'Failed to upload image. Please try again.')
+      console.error('Error uploading:', error)
     } finally {
       setUploading(false)
-      setUploadProgress(0)
     }
+  }
+
+  if (!session) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 p-8 text-center">
+        <Lock className="h-12 w-12 text-muted-foreground" />
+        <div>
+          <h3 className="text-lg font-semibold">Authentication Required</h3>
+          <p className="text-sm text-muted-foreground">
+            Please sign in to upload images
+          </p>
+        </div>
+        <Button onClick={() => router.push('/auth/login')}>
+          Sign In with GitHub
+        </Button>
+      </div>
+    )
   }
 
   return (

@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from 'react'
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Home, ImagePlus, Heart, User } from "lucide-react"
@@ -14,6 +15,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet"
 import { ImageUpload } from "@/components/image-upload"
+import { useAuth } from '@/hooks/useAuth'
 
 const routes = [
   {
@@ -41,8 +43,16 @@ const routes = [
 
 export function BottomNav() {
   const pathname = usePathname()
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const { requireAuth } = useAuth()
+
   const handleUploadSuccess = () => {
+    setSheetOpen(false)
     window.location.reload()
+  }
+
+  const handleUploadClick = () => {
+    requireAuth(() => setSheetOpen(true))
   }
 
   return (
@@ -52,18 +62,23 @@ export function BottomNav() {
           {routes.map((route) => (
             <div key={route.label}>
               {route.sheet ? (
-                <Sheet>
+                <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                   <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-12 w-12">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-12 w-12"
+                      onClick={handleUploadClick}
+                    >
                       <route.icon className="h-6 w-6" />
                       <span className="sr-only">{route.label}</span>
                     </Button>
                   </SheetTrigger>
                   <SheetContent side="bottom" className="h-[90vh]">
                     <SheetHeader>
-                      <SheetTitle>Add New Image</SheetTitle>
+                      <SheetTitle>Upload Image</SheetTitle>
                       <SheetDescription>
-                        Upload a new image to your carousel.
+                        Upload a new image to your carousel. Images will appear after upload.
                       </SheetDescription>
                     </SheetHeader>
                     <div className="mt-6">
