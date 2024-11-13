@@ -4,11 +4,10 @@ import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ImagePlus, Loader2, Lock } from "lucide-react"
+import { ImagePlus, Loader2 } from "lucide-react"
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import Image from 'next/image'
 import { Progress } from "@/components/ui/progress"
-import { useRouter } from 'next/navigation'
 
 interface ImageUploadProps {
   onSuccess?: () => void
@@ -16,21 +15,11 @@ interface ImageUploadProps {
 
 export function ImageUpload({ onSuccess }: ImageUploadProps) {
   const supabase = createClientComponentClient()
-  const router = useRouter()
-  const [session, setSession] = useState<any>(null)
   const [uploading, setUploading] = useState(false)
   const [title, setTitle] = useState('')
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
-
-  useEffect(() => {
-    const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setSession(session)
-    }
-    getSession()
-  }, [supabase.auth])
 
   useEffect(() => {
     if (!file) {
@@ -113,23 +102,6 @@ export function ImageUpload({ onSuccess }: ImageUploadProps) {
     } finally {
       setUploading(false)
     }
-  }
-
-  if (!session) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-4 p-8 text-center">
-        <Lock className="h-12 w-12 text-muted-foreground" />
-        <div>
-          <h3 className="text-lg font-semibold">Authentication Required</h3>
-          <p className="text-sm text-muted-foreground">
-            Please sign in to upload images
-          </p>
-        </div>
-        <Button onClick={() => router.push('/auth/login')}>
-          Sign In with GitHub
-        </Button>
-      </div>
-    )
   }
 
   return (

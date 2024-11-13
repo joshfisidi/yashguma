@@ -5,7 +5,6 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Heart, MessageCircle } from "lucide-react"
 import { CarouselItem } from '@/types/database.types'
 import { useLikedItems } from '@/hooks/useLikedItems'
-import { useAuth } from '@/hooks/useAuth'
 import { cn } from "@/lib/utils"
 
 interface CarouselControlsProps {
@@ -25,18 +24,11 @@ export const CarouselControls: FC<CarouselControlsProps> = ({
 }) => {
   const currentItem = items[currentIndex]
   const { hasLiked, addLikedItem } = useLikedItems()
-  const { requireAuth } = useAuth()
 
   const handleLike = (id: string) => {
-    requireAuth(() => {
-      if (hasLiked(id)) return
-      onLike(id)
-      addLikedItem(id)
-    })
-  }
-
-  const handleCommentToggle = () => {
-    requireAuth(onCommentToggle)
+    if (hasLiked(id)) return
+    onLike(id)
+    addLikedItem(id)
   }
 
   return (
@@ -55,7 +47,7 @@ export const CarouselControls: FC<CarouselControlsProps> = ({
         <ToggleGroupItem 
           value="comments" 
           aria-label="Comments"
-          onClick={handleCommentToggle}
+          onClick={onCommentToggle}
           className={cn(showComments && "bg-accent text-accent-foreground")}
         >
           <MessageCircle className="h-4 w-4" />
