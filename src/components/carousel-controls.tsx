@@ -26,7 +26,6 @@ export const CarouselControls: FC<CarouselControlsProps> = ({
   const { hasLiked, addLikedItem } = useLikedItems()
 
   const handleLike = (id: string) => {
-    if (hasLiked(id)) return
     onLike(id)
     addLikedItem(id)
   }
@@ -38,8 +37,6 @@ export const CarouselControls: FC<CarouselControlsProps> = ({
           value="like" 
           aria-label="Like"
           onClick={() => handleLike(currentItem.id)}
-          disabled={hasLiked(currentItem.id)}
-          className={hasLiked(currentItem.id) ? "opacity-50 cursor-not-allowed" : ""}
         >
           <Heart className={`h-4 w-4 ${hasLiked(currentItem.id) ? "fill-current text-red-500" : "text-gray-500"}`} />
           <span className="ml-1">{currentItem.likes}</span>
