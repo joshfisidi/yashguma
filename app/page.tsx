@@ -37,7 +37,7 @@ export default function HomePage() {
                   <div className="space-y-3 text-left">
                     <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">About Me</h2>
                     <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-                      I build visually striking, emotionally resonant web experiences that blend design systems, code, and experimental interaction. My work lives where aesthetic signal meets technical sharpness.
+                      Yash Guma is an independent artist creating dark, melodic music shaped by modern trap, experimental texture, and emotional depth. His sound blends atmosphere, precision, and raw introspection, building a distinct identity rooted in resilience, transformation, and full creative control.
                     </p>
                   </div>
 
