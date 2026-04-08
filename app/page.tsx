@@ -6,7 +6,7 @@ import { NavButtons } from "@/components/nav-buttons";
 import { Badge } from "@/components/ui/badge";
 
 const HERO_IMAGE =
-  "https://cufummffmtitwhfisrlw.supabase.co/storage/v1/object/public/IMAGES/36C72C97-FBFC-47E5-A348-E1AD057AC7B1.PNG";
+  "https://cufummffmtitwhfisrlw.supabase.co/storage/v1/object/public/IMAGES/yashguma-fisidi-joshfisidi-phase1.PNG";
 
 export default function HomePage() {
   return (
