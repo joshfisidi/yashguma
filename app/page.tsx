@@ -4,8 +4,8 @@ import { useEffect, useRef } from "react";
 import { animate } from "animejs";
 import { GenerativeBackground } from "@/components/generative-background";
 import { SkewedCard } from "@/components/skewed-card";
-import { Button } from "@/components/ui/button";
-import { Code2, Github } from "lucide-react";
+import { MusicButton } from "@/components/music-button";
+import { AppleMusicIcon, SoundCloudIcon } from "@/lib/icons";
 
 const HERO_IMAGE =
   "https://cufummffmtitwhfisrlw.supabase.co/storage/v1/object/public/IMAGES/yashguma-fisidi-joshfisidi-phase1.PNG";
@@ -128,20 +128,18 @@ export default function HomePage() {
             <SkewedCard imageSrc={HERO_IMAGE} className="w-full" />
           </div>
 
-          <div className="mt-4 flex items-center justify-center gap-3">
-            <Button asChild variant="outline" size="lg" className="rounded-xl">
-              <a href="#projects" className="flex items-center gap-2">
-                <Code2 className="h-4 w-4" />
-                Projects
-              </a>
-            </Button>
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <MusicButton
+              href="https://music.apple.com"
+              icon={<AppleMusicIcon className="h-5 w-5" />}
+              label="Listen on Apple Music"
+            />
 
-            <Button asChild variant="outline" size="lg" className="rounded-xl">
-              <a href="https://github.com/yashguma" target="_blank" rel="noreferrer" className="flex items-center gap-2">
-                <Github className="h-4 w-4" />
-                GitHub
-              </a>
-            </Button>
+            <MusicButton
+              href="https://soundcloud.com"
+              icon={<SoundCloudIcon className="h-5 w-5" />}
+              label="Listen on SoundCloud"
+            />
           </div>
         </section>
       </div>
