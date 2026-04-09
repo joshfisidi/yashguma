@@ -1,12 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useRef, type MouseEvent } from "react";
+import { useState, useRef, type MouseEvent, type ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 interface SkewedCardProps {
-  children: React.ReactNode;
+  children?: ReactNode;
   className?: string;
   imageSrc?: string;
 }
@@ -40,6 +40,8 @@ export function SkewedCard({ children, className, imageSrc }: SkewedCardProps) {
   const handleMouseEnter = () => {
     if (typeof window !== "undefined" && window.innerWidth >= 768) setIsHovered(true);
   };
+
+  const hasContent = children !== undefined && children !== null;
 
   return (
     <div
@@ -85,9 +87,11 @@ export function SkewedCard({ children, className, imageSrc }: SkewedCardProps) {
           </div>
         ) : null}
 
-        <CardContent className="relative p-5 sm:p-6 md:p-8" style={{ transform: "translateZ(24px)" }}>
-          {children}
-        </CardContent>
+        {hasContent ? (
+          <CardContent className="relative p-5 sm:p-6 md:p-8" style={{ transform: "translateZ(24px)" }}>
+            {children}
+          </CardContent>
+        ) : null}
       </Card>
     </div>
   );

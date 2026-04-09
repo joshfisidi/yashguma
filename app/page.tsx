@@ -1,64 +1,74 @@
 "use client";
 
-import { GenerativeBackground } from "@/components/generative-background";
-import { SkewedCard } from "@/components/skewed-card";
-import { NavButtons } from "@/components/nav-buttons";
+import { GenerativeBackground } from '@/components/generative-background'
+import { SkewedCard } from '@/components/skewed-card'
+import { Button } from '@/components/ui/button'
+import { Github, Code2 } from 'lucide-react'
 
 const HERO_IMAGE =
-  "https://cufummffmtitwhfisrlw.supabase.co/storage/v1/object/public/IMAGES/yashguma-fisidi-joshfisidi-phase1.PNG";
+  'https://cufummffmtitwhfisrlw.supabase.co/storage/v1/object/public/IMAGES/yashguma-fisidi-joshfisidi-phase1.PNG'
 
 export default function HomePage() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-background">
       <GenerativeBackground />
 
-      <div className="relative z-10 flex min-h-screen flex-col px-4 py-8 sm:px-6 sm:py-10 lg:justify-center lg:px-8">
-        <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 lg:gap-12">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-8xl">
-              <span className="bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 py-10 text-center">
+        <section className="w-full max-w-2xl">
+          <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-6xl">
+            <span className="relative inline-block">
+              <span className="pointer-events-none absolute -inset-4 -z-20 rounded-full bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.45)_0%,rgba(0,0,0,0.05)_40%,rgba(0,0,0,0)_65%)] animate-[mistShift_8s_ease-in-out_infinite]" />
+              <span className="pointer-events-none absolute -inset-2 -z-10 rounded-full bg-[radial-gradient(circle_at_30%_40%,rgba(8,26,57,0.45)_0%,rgba(8,26,57,0.05)_45%,rgba(8,26,57,0)_70%)] blur-md animate-[mistDrift_6s_ease-in-out_infinite]" />
+              <span className="relative block text-[#0a2a6a] drop-shadow-[0_4px_20px_rgba(0,0,0,0.55)]">
                 Yash Guma
               </span>
-            </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg md:text-xl">
-              Creative developer, generative artist, and systems builder shaping digital experiences with depth and precision.
-            </p>
-          </div>
+            </span>
+          </h1>
 
-          <div className="grid w-full items-start gap-6 lg:grid-cols-[minmax(160px,220px)_minmax(0,1fr)_minmax(160px,220px)] lg:gap-8">
-            <div className="order-2 hidden lg:block">
-              <NavButtons position="left" />
-            </div>
+          <SkewedCard imageSrc={HERO_IMAGE} className="mx-auto w-full max-w-sm sm:max-w-xl" />
 
-            <div className="order-1 flex justify-center lg:order-2">
-              <SkewedCard imageSrc={HERO_IMAGE} className="w-full max-w-sm sm:max-w-xl lg:max-w-2xl">
-                <div className="space-y-6">
-                  <div className="space-y-3 text-left">
-                    <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">About Me</h2>
-                    <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-                      Yash Guma is an independent artist creating dark, melodic music shaped by modern trap, experimental texture, and emotional depth. His sound blends atmosphere, precision, and raw introspection, building a distinct identity rooted in resilience, transformation, and full creative control.
-                    </p>
-                  </div>
+          <div className="mt-5 flex w-full items-center justify-between">
+            <Button asChild variant="outline" size="lg" className="rounded-xl">
+              <a href="#projects" className="flex items-center gap-2">
+                <Code2 className="h-4 w-4" />
+                Projects
+              </a>
+            </Button>
 
-                </div>
-              </SkewedCard>
-            </div>
-
-            <div className="order-3 hidden lg:block">
-              <NavButtons position="right" />
-            </div>
-          </div>
-
-          <div className="grid w-full gap-3 sm:grid-cols-2 lg:hidden">
-            <NavButtons position="left" />
-            <NavButtons position="right" />
-          </div>
-        </div>
-
-        <footer className="relative mt-8 text-center lg:mt-10">
-          <p className="text-xs text-muted-foreground sm:text-sm">Built with simplex noise, motion systems, and mobile-first polish.</p>
-        </footer>
+            <Button asChild variant="outline" size="lg" className="rounded-xl">
+              <a href="https://github.com/yashguma" target="_blank" rel="noreferrer" className="flex items-center gap-2">
+                <Github className="h-4 w-4" />
+                GitHub
+              </a>
+            </Button>
+          </div>        </section>
       </div>
+
+      <style jsx>{`
+        @keyframes mistShift {
+          0%,
+          100% {
+            transform: translate3d(-8%, 0, 0) scale(0.95);
+            opacity: 0.55;
+          }
+          50% {
+            transform: translate3d(8%, 6%, 0) scale(1.04);
+            opacity: 0.3;
+          }
+        }
+
+        @keyframes mistDrift {
+          0%,
+          100% {
+            transform: translate3d(8%, 0, 0) scale(0.96);
+            opacity: 0.35;
+          }
+          50% {
+            transform: translate3d(-8%, 4%, 0) scale(1.05);
+            opacity: 0.7;
+          }
+        }
+      `}</style>
     </main>
-  );
+  )
 }
