@@ -12,6 +12,8 @@ export interface TiltStyleOptions {
   perspective?: number
   enableSmoothing?: boolean
   smoothingWindow?: number
+  optimizeForMobile?: boolean
+  mobileIntensityScale?: number
 }
 
 export function useTiltStyle(orientation: OrientationVector, options: TiltStyleOptions = {}) {
@@ -23,31 +25,51 @@ export function useTiltStyle(orientation: OrientationVector, options: TiltStyleO
     perspective = 700,
     enableSmoothing = false,
     smoothingWindow = 6,
+    optimizeForMobile = false,
+    mobileIntensityScale = 0.65,
   } = options
 
-  const betaSmoother = React.useRef(
-    enableSmoothing ? createMovingAverage(Math.max(1, Math.round(smoothingWindow))) : null,
-  )
-  const gammaSmoother = React.useRef(
-    enableSmoothing ? createMovingAverage(Math.max(1, Math.round(smoothingWindow))) : null,
-  )
+  const effectiveMaxBeta = optimizeForMobile ? Math.min(maxBetaDeg, 18) : maxBetaDeg
+  const effectiveMaxGamma = optimizeForMobile ? Math.min(maxGammaDeg, 18) : maxGammaDeg
+  const effectiveSmoothing = optimizeForMobile
+    ? Math.max(1, Math.round(smoothingWindow + 2))
+    : Math.max(1, Math.round(smoothingWindow))
+  const effectiveDeadzoneBeta = optimizeForMobile ? Math.max(0, betaDeadzone) : betaDeadzone
+  const effectiveDeadzoneGamma = optimizeForMobile ? Math.max(0, gammaDeadzone) : gammaDeadzone
+  const effectiveIntensity = optimizeForMobile ? clamp(mobileIntensityScale, 0.4, 1) : 1
 
-  if (!enableSmoothing) {
+  const betaSmoother = React.useRef<ReturnType<typeof createMovingAverage> | null>(null)
+  const gammaSmoother = React.useRef<ReturnType<typeof createMovingAverage> | null>(null)
+
+  React.useEffect(() => {
+    if (enableSmoothing) {
+      betaSmoother.current = createMovingAverage(effectiveSmoothing)
+      gammaSmoother.current = createMovingAverage(effectiveSmoothing)
+      return
+    }
+
+    if (betaSmoother.current) {
+      betaSmoother.current.reset()
+    }
+    if (gammaSmoother.current) {
+      gammaSmoother.current.reset()
+    }
+
     betaSmoother.current = null
     gammaSmoother.current = null
-  }
+  }, [enableSmoothing, effectiveSmoothing])
 
   const { beta, gamma } = React.useMemo(() => {
     const normalizedBeta = clamp(
-      applyDeadzone(orientation.beta, betaDeadzone),
-      -Math.abs(maxBetaDeg),
-      Math.abs(maxBetaDeg),
+      applyDeadzone(orientation.beta, effectiveDeadzoneBeta),
+      -Math.abs(effectiveMaxBeta),
+      Math.abs(effectiveMaxBeta),
     )
 
     const normalizedGamma = clamp(
-      applyDeadzone(orientation.gamma, gammaDeadzone),
-      -Math.abs(maxGammaDeg),
-      Math.abs(maxGammaDeg),
+      applyDeadzone(orientation.gamma, effectiveDeadzoneGamma),
+      -Math.abs(effectiveMaxGamma),
+      Math.abs(effectiveMaxGamma),
     )
 
     const smoothedBeta = betaSmoother.current
@@ -58,15 +80,28 @@ export function useTiltStyle(orientation: OrientationVector, options: TiltStyleO
       : normalizedGamma
 
     return {
-      beta: smoothedBeta,
-      gamma: smoothedGamma,
+      beta: smoothedBeta * effectiveIntensity,
+      gamma: smoothedGamma * effectiveIntensity,
     }
-  }, [orientation.beta, orientation.gamma, betaDeadzone, gammaDeadzone, maxBetaDeg, maxGammaDeg, enableSmoothing])
+  }, [
+    effectiveDeadzoneBeta,
+    effectiveDeadzoneGamma,
+    effectiveIntensity,
+    effectiveMaxBeta,
+    effectiveMaxGamma,
+    orientation.beta,
+    orientation.gamma,
+    enableSmoothing,
+  ])
 
   return {
     transform: `perspective(${Math.max(1, perspective)}px) rotateX(${beta.toFixed(2)}deg) rotateY(${(
       -gamma
     ).toFixed(2)}deg)`,
+    beta,
+    gamma,
+    maxBetaDeg: effectiveMaxBeta,
+    maxGammaDeg: effectiveMaxGamma,
   }
 }
 
