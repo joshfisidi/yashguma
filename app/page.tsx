@@ -5,7 +5,8 @@ import { animate } from "animejs";
 import { GenerativeBackground } from "@/components/generative-background";
 import { SkewedCard } from "@/components/skewed-card";
 import { MusicButton } from "@/components/music-button";
-import { AppleMusicIcon, SoundCloudIcon } from "@/lib/icons";
+import { StreamingServicesDrawer } from "@/components/streaming-services-drawer";
+import { AppleMusicIcon, SoundCloudIcon, SpotifyIcon } from "@/lib/icons";
 
 const HERO_IMAGE =
   "https://cufummffmtitwhfisrlw.supabase.co/storage/v1/object/public/IMAGES/yashguma-fisidi-joshfisidi-phase1.PNG";
@@ -130,16 +131,24 @@ export default function HomePage() {
 
           <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <MusicButton
+              href="https://spotify.com"
+              icon={<SpotifyIcon className="h-5 w-5" />}
+              label="Spotify"
+            />
+
+            <MusicButton
               href="https://music.apple.com"
               icon={<AppleMusicIcon className="h-5 w-5" />}
-              label="Listen on Apple Music"
+              label="Apple Music"
             />
 
             <MusicButton
               href="https://soundcloud.com"
               icon={<SoundCloudIcon className="h-5 w-5" />}
-              label="Listen on SoundCloud"
+              label="SoundCloud"
             />
+
+            <StreamingServicesDrawer />
           </div>
         </section>
       </div>
