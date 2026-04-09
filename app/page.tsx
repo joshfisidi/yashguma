@@ -110,8 +110,8 @@ export default function HomePage() {
     <main className="relative min-h-screen overflow-hidden bg-background">
       <GenerativeBackground />
 
-      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-10 text-center">
-        <section className="w-full max-w-2xl space-y-5">
+      <div className="relative z-10 flex min-h-screen items-start justify-start px-4 pb-32 pt-8 text-center sm:pt-10">
+        <section className="w-full max-w-2xl space-y-5 pt-2">
           <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
             <span className="mist-title relative inline-block">
               <span className="relative z-10 text-[#0f2f77]">Yash Guma</span>
