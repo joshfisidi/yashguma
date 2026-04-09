@@ -3,7 +3,6 @@
 import { GenerativeBackground } from "@/components/generative-background";
 import { SkewedCard } from "@/components/skewed-card";
 import { NavButtons } from "@/components/nav-buttons";
-import { Badge } from "@/components/ui/badge";
 
 const HERO_IMAGE =
   "https://cufummffmtitwhfisrlw.supabase.co/storage/v1/object/public/IMAGES/yashguma-fisidi-joshfisidi-phase1.PNG";
@@ -41,41 +40,6 @@ export default function HomePage() {
                     </p>
                   </div>
 
-                  <div className="space-y-3">
-                    <h3 className="text-xs font-medium uppercase tracking-[0.24em] text-muted-foreground sm:text-sm">
-                      Technologies
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {["Next.js", "TypeScript", "React", "Three.js", "Generative UI", "Motion"].map((tech) => (
-                        <Badge
-                          key={tech}
-                          variant="secondary"
-                          className="bg-secondary/80 px-3 py-1 text-xs transition-colors hover:bg-primary/20 sm:text-sm"
-                        >
-                          {tech}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <h3 className="text-xs font-medium uppercase tracking-[0.24em] text-muted-foreground sm:text-sm">
-                      Focus Areas
-                    </h3>
-                    <ul className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-2 sm:text-base">
-                      {[
-                        "Generative systems",
-                        "Interactive 3D experiences",
-                        "Creative developer tooling",
-                        "Brand-driven digital identity",
-                      ].map((item) => (
-                        <li key={item} className="flex items-start gap-2">
-                          <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </SkewedCard>
             </div>
