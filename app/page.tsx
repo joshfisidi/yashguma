@@ -115,7 +115,7 @@ export default function HomePage() {
         <section className="w-full max-w-[22rem] space-y-5 pt-2 sm:max-w-[26rem] lg:max-w-[30rem] xl:max-w-[32rem]">
           <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
             <span className="mist-title relative inline-block">
-              <span className="relative z-10 text-[#0f2f77]">Yash Guma</span>
+              <span className="relative z-10 text-black">Yash Guma</span>
               <span ref={mistARef} className="mist-title-layer mist-title-layer-a pointer-events-none" aria-hidden>
                 Yash Guma
               </span>
