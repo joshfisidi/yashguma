@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState, useRef, type MouseEvent, type ReactNode } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 interface SkewedCardProps {
@@ -26,8 +26,8 @@ export function SkewedCard({ children, className, imageSrc }: SkewedCardProps) {
     const mouseX = e.clientX - centerX;
     const mouseY = e.clientY - centerY;
 
-    const rotateX = (mouseY / (rect.height / 2)) * -10;
-    const rotateY = (mouseX / (rect.width / 2)) * 10;
+    const rotateX = (mouseY / (rect.height / 2)) * -8;
+    const rotateY = (mouseX / (rect.width / 2)) * 8;
 
     setRotation({ x: rotateX, y: rotateY });
   };
@@ -54,9 +54,8 @@ export function SkewedCard({ children, className, imageSrc }: SkewedCardProps) {
     >
       <Card
         className={cn(
-          "relative overflow-hidden rounded-[28px] border-border/50 bg-card/85 backdrop-blur-xl transition-all duration-200 ease-out",
-          "shadow-2xl shadow-primary/10",
-          isHovered && "shadow-primary/20",
+          "relative overflow-hidden rounded-[28px] border-none bg-transparent p-0 shadow-none transition-all duration-200 ease-out",
+          isHovered && "shadow-xl shadow-black/25",
           className,
         )}
         style={{
@@ -64,33 +63,28 @@ export function SkewedCard({ children, className, imageSrc }: SkewedCardProps) {
           transformStyle: "preserve-3d",
         }}
       >
-        <div
-          className="absolute inset-0 opacity-0 transition-opacity duration-300"
-          style={{
-            background: `radial-gradient(circle at ${50 + rotation.y * 2}% ${50 + rotation.x * 2}%, rgba(79, 209, 197, 0.15), transparent 50%)`,
-            opacity: isHovered ? 1 : 0,
-          }}
-        />
-
         {imageSrc ? (
-          <div className="relative aspect-[4/5] w-full overflow-hidden border-b border-border/40">
+          <div className="relative w-full">
             <Image
               src={imageSrc}
               alt="Yash Guma visual"
-              fill
+              width={900}
+              height={1125}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 70vw, 28rem"
-              className="object-cover object-center"
+              className="h-auto w-full rounded-[28px] object-cover object-center"
               priority
               unoptimized
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
           </div>
         ) : null}
 
         {hasContent ? (
-          <CardContent className="relative p-5 sm:p-6 md:p-8" style={{ transform: "translateZ(24px)" }}>
+          <div
+            className="absolute inset-0 p-6"
+            style={{ transform: "translateZ(24px)" }}
+          >
             {children}
-          </CardContent>
+          </div>
         ) : null}
       </Card>
     </div>
