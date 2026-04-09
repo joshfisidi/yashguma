@@ -60,6 +60,7 @@ function NoiseField() {
 
 function FloatingParticles() {
   const particlesRef = useRef<THREE.Points>(null);
+  const glowRef = useRef<THREE.Points>(null);
   const noise = useMemo(() => new SimplexNoise(123), []);
   
   const { positions, originalPositions } = useMemo(() => {
@@ -85,7 +86,7 @@ function FloatingParticles() {
   }, []);
 
   useFrame(({ clock }) => {
-    if (!particlesRef.current) return;
+    if (!particlesRef.current || !glowRef.current) return;
     const time = clock.getElapsedTime() * 0.2;
     const positionArray = particlesRef.current.geometry.attributes.position.array as Float32Array;
 
@@ -104,26 +105,47 @@ function FloatingParticles() {
     }
 
     particlesRef.current.geometry.attributes.position.needsUpdate = true;
+    glowRef.current.geometry.attributes.position.needsUpdate = true;
   });
 
   return (
-    <points ref={particlesRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={positions.length / 3}
-          array={positions}
-          itemSize={3}
+    <>
+      <points ref={glowRef}>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            count={positions.length / 3}
+            array={positions}
+            itemSize={3}
+          />
+        </bufferGeometry>
+        <pointsMaterial
+          size={0.09}
+          color="#ffffff"
+          transparent
+          opacity={0.18}
+          sizeAttenuation
+          depthWrite={false}
         />
-      </bufferGeometry>
-      <pointsMaterial
-        size={0.03}
-        color="#4fd1c5"
-        transparent
-        opacity={0.6}
-        sizeAttenuation
-      />
-    </points>
+      </points>
+      <points ref={particlesRef}>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            count={positions.length / 3}
+            array={positions}
+            itemSize={3}
+          />
+        </bufferGeometry>
+        <pointsMaterial
+          size={0.03}
+          color="#0d0d0d"
+          transparent
+          opacity={0.95}
+          sizeAttenuation
+        />
+      </points>
+    </>
   );
 }
 
@@ -132,7 +154,7 @@ export function GenerativeBackground() {
     <div className="fixed inset-0 -z-10">
       <Canvas
         camera={{ position: [0, 0, 8], fov: 60 }}
-        style={{ background: "linear-gradient(to bottom, #0a0a0a, #111111)" }}
+        style={{ background: "linear-gradient(to bottom, #090909, #111111)" }}
       >
         <ambientLight intensity={0.5} />
         <NoiseField />
