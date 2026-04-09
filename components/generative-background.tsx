@@ -16,9 +16,9 @@ function NoiseField() {
     const colors = new Float32Array(positions.count * 3);
     
     for (let i = 0; i < positions.count; i++) {
-      colors[i * 3] = 0.1;
-      colors[i * 3 + 1] = 0.8;
-      colors[i * 3 + 2] = 0.7;
+      colors[i * 3] = 0.08;
+      colors[i * 3 + 1] = 0.08;
+      colors[i * 3 + 2] = 0.08;
     }
     
     geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
@@ -42,9 +42,9 @@ function NoiseField() {
       positionArray[i * 3 + 2] = combined * 1.5;
       
       const normalizedNoise = (combined + 1) * 0.5;
-      colorArray[i * 3] = 0.1 + normalizedNoise * 0.2;
-      colorArray[i * 3 + 1] = 0.6 + normalizedNoise * 0.3;
-      colorArray[i * 3 + 2] = 0.6 + normalizedNoise * 0.2;
+      colorArray[i * 3] = 0.08 + normalizedNoise * 0.16;
+      colorArray[i * 3 + 1] = 0.08 + normalizedNoise * 0.16;
+      colorArray[i * 3 + 2] = 0.08 + normalizedNoise * 0.16;
     }
 
     positions.needsUpdate = true;
@@ -121,9 +121,9 @@ function FloatingParticles() {
         </bufferGeometry>
         <pointsMaterial
           size={0.09}
-          color="#ffffff"
+          color="#2f2f2f"
           transparent
-          opacity={0.18}
+          opacity={0.14}
           sizeAttenuation
           depthWrite={false}
         />
@@ -139,9 +139,9 @@ function FloatingParticles() {
         </bufferGeometry>
         <pointsMaterial
           size={0.03}
-          color="#0d0d0d"
+          color="#151515"
           transparent
-          opacity={0.95}
+          opacity={0.75}
           sizeAttenuation
         />
       </points>
@@ -154,7 +154,7 @@ export function GenerativeBackground() {
     <div className="fixed inset-0 -z-10">
       <Canvas
         camera={{ position: [0, 0, 8], fov: 60 }}
-        style={{ background: "linear-gradient(to bottom, #090909, #111111)" }}
+        style={{ background: "linear-gradient(to bottom, #000000, #090909)" }}
       >
         <ambientLight intensity={0.5} />
         <NoiseField />
