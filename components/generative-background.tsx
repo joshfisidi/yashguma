@@ -1,28 +1,29 @@
 "use client";
 
 import { useRef, useMemo } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
+import { TextureLoader } from "three";
 import { SimplexNoise, fourierWave } from "@/lib/simplex-noise";
 
 function NoiseField() {
   const meshRef = useRef<THREE.Mesh>(null);
   const noise = useMemo(() => new SimplexNoise(42), []);
-  
+
   const { geometry, positions, colors } = useMemo(() => {
     const count = 80;
     const geometry = new THREE.PlaneGeometry(20, 20, count, count);
     const positions = geometry.attributes.position;
     const colors = new Float32Array(positions.count * 3);
-    
+
     for (let i = 0; i < positions.count; i++) {
-      colors[i * 3] = 0.08;
-      colors[i * 3 + 1] = 0.08;
-      colors[i * 3 + 2] = 0.08;
+      colors[i * 3] = 0.1;
+      colors[i * 3 + 1] = 0.8;
+      colors[i * 3 + 2] = 0.7;
     }
-    
+
     geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
-    
+
     return { geometry, positions, colors };
   }, []);
 
@@ -34,17 +35,17 @@ function NoiseField() {
     for (let i = 0; i < positions.count; i++) {
       const x = positionArray[i * 3];
       const y = positionArray[i * 3 + 1];
-      
+
       const noiseVal = noise.noise3D(x * 0.15, y * 0.15, time);
       const fourier = fourierWave(x * 0.1, time, 5) * 0.5;
       const combined = noiseVal + fourier;
-      
+
       positionArray[i * 3 + 2] = combined * 1.5;
-      
+
       const normalizedNoise = (combined + 1) * 0.5;
-      colorArray[i * 3] = 0.08 + normalizedNoise * 0.16;
-      colorArray[i * 3 + 1] = 0.08 + normalizedNoise * 0.16;
-      colorArray[i * 3 + 2] = 0.08 + normalizedNoise * 0.16;
+      colorArray[i * 3] = 0.1 + normalizedNoise * 0.2;
+      colorArray[i * 3 + 1] = 0.6 + normalizedNoise * 0.3;
+      colorArray[i * 3 + 2] = 0.6 + normalizedNoise * 0.2;
     }
 
     positions.needsUpdate = true;
@@ -58,94 +59,53 @@ function NoiseField() {
   );
 }
 
-function FloatingParticles() {
-  const particlesRef = useRef<THREE.Points>(null);
-  const glowRef = useRef<THREE.Points>(null);
+function FloatingLogos() {
+  const logosRef = useRef<THREE.Group>(null);
   const noise = useMemo(() => new SimplexNoise(123), []);
-  
-  const { positions, originalPositions } = useMemo(() => {
-    const count = 500;
-    const positions = new Float32Array(count * 3);
-    const originalPositions = new Float32Array(count * 3);
-    
-    for (let i = 0; i < count; i++) {
-      const x = (Math.random() - 0.5) * 20;
-      const y = (Math.random() - 0.5) * 20;
-      const z = (Math.random() - 0.5) * 10;
-      
-      positions[i * 3] = x;
-      positions[i * 3 + 1] = y;
-      positions[i * 3 + 2] = z;
-      
-      originalPositions[i * 3] = x;
-      originalPositions[i * 3 + 1] = y;
-      originalPositions[i * 3 + 2] = z;
-    }
-    
-    return { positions, originalPositions };
+  const texture = useLoader(TextureLoader, "/fisidi-particle.png");
+
+  const particles = useMemo(() => {
+    return Array.from({ length: 80 }, () => ({
+      baseX: (Math.random() - 0.5) * 20,
+      baseY: (Math.random() - 0.5) * 20,
+      baseZ: (Math.random() - 0.5) * 10,
+      scale: 0.16 + Math.random() * 0.1,
+      rotation: Math.random() * Math.PI * 2,
+      drift: 0.6 + Math.random() * 0.7,
+    }));
   }, []);
 
   useFrame(({ clock }) => {
-    if (!particlesRef.current || !glowRef.current) return;
+    if (!logosRef.current) return;
     const time = clock.getElapsedTime() * 0.2;
-    const positionArray = particlesRef.current.geometry.attributes.position.array as Float32Array;
 
-    for (let i = 0; i < positionArray.length / 3; i++) {
-      const ox = originalPositions[i * 3];
-      const oy = originalPositions[i * 3 + 1];
-      const oz = originalPositions[i * 3 + 2];
-      
-      const noiseX = noise.noise3D(ox * 0.1, oy * 0.1, time) * 0.5;
-      const noiseY = noise.noise3D(ox * 0.1 + 100, oy * 0.1, time) * 0.5;
-      const noiseZ = noise.noise3D(ox * 0.1 + 200, oy * 0.1, time) * 0.3;
-      
-      positionArray[i * 3] = ox + noiseX;
-      positionArray[i * 3 + 1] = oy + noiseY;
-      positionArray[i * 3 + 2] = oz + noiseZ;
-    }
+    logosRef.current.children.forEach((child, i) => {
+      const particle = particles[i];
+      const noiseX = noise.noise3D(particle.baseX * 0.08, particle.baseY * 0.08, time) * 0.6;
+      const noiseY = noise.noise3D(particle.baseX * 0.08 + 100, particle.baseY * 0.08, time) * 0.6;
+      const noiseZ = noise.noise3D(particle.baseX * 0.08 + 200, particle.baseY * 0.08, time) * 0.35;
 
-    particlesRef.current.geometry.attributes.position.needsUpdate = true;
-    glowRef.current.geometry.attributes.position.needsUpdate = true;
+      child.position.set(
+        particle.baseX + noiseX,
+        particle.baseY + noiseY,
+        particle.baseZ + noiseZ,
+      );
+      child.rotation.z = particle.rotation + time * 0.12 * particle.drift;
+    });
   });
 
   return (
-    <>
-      <points ref={glowRef}>
-        <bufferGeometry>
-          <bufferAttribute
-            attach="attributes-position"
-            count={positions.length / 3}
-            array={positions}
-            itemSize={3}
-          />
-        </bufferGeometry>
-        <pointsMaterial
-          size={0.09}
-          color="#2f2f2f"
-          transparent
-          opacity={0.14}
-          sizeAttenuation
-          depthWrite={false}
-        />
-      </points>
-      <points ref={particlesRef}>
-        <bufferGeometry>
-          <bufferAttribute
-            attach="attributes-position"
-            count={positions.length / 3}
-            array={positions}
-            itemSize={3}
-          />
-        </bufferGeometry>
-        <pointsMaterial
-          size={0.03}
-          color="#151515"
-          transparent
-          opacity={0.75}
-          sizeAttenuation
-        />
-      </points>
-    </>
+    <group ref={logosRef}>
+      {particles.map((particle, index) => (
+        <sprite
+          key={index}
+          position={[particle.baseX, particle.baseY, particle.baseZ]}
+          scale={[particle.scale, particle.scale, particle.scale]}
+        >
+          <spriteMaterial map={texture} transparent opacity={0.22} depthWrite={false} />
+        </sprite>
+      ))}
+    </group>
   );
 }
 
@@ -154,11 +114,11 @@ export function GenerativeBackground() {
     <div className="fixed inset-0 -z-10">
       <Canvas
         camera={{ position: [0, 0, 8], fov: 60 }}
-        style={{ background: "linear-gradient(to bottom, #000000, #090909)" }}
+        style={{ background: "linear-gradient(to bottom, #090909, #111111)" }}
       >
-        <ambientLight intensity={0.5} />
+        <ambientLight intensity={0.6} />
         <NoiseField />
-        <FloatingParticles />
+        <FloatingLogos />
       </Canvas>
     </div>
   );
