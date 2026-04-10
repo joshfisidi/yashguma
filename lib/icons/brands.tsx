@@ -1,4 +1,15 @@
-import { SiApplemusic, SiSoundcloud, SiSpotify, SiTidal, SiYoutubemusic } from "react-icons/si";
+import {
+  SiApplemusic,
+  SiSoundcloud,
+  SiSpotify,
+  SiTidal,
+  SiYoutubemusic,
+  SiInstagram,
+  SiTiktok,
+  SiSnapchat,
+  SiX,
+  SiThreads,
+} from "react-icons/si";
 
 type IconProps = {
   className?: string;
@@ -34,4 +45,24 @@ export const AudiusIcon = ({ className }: IconProps) => (
 
 export const AmazonMusicIcon = ({ className }: IconProps) => (
   <span className={`font-semibold tracking-wide text-sky-500 ${className ?? ""}`}>a</span>
+);
+
+export const InstagramIcon = ({ className }: IconProps) => (
+  <SiInstagram className={`text-white ${className ?? ""}`} />
+);
+
+export const TiktokIcon = ({ className }: IconProps) => (
+  <SiTiktok className={`text-white ${className ?? ""}`} />
+);
+
+export const SnapchatIcon = ({ className }: IconProps) => (
+  <SiSnapchat className={`text-white ${className ?? ""}`} />
+);
+
+export const XIcon = ({ className }: IconProps) => (
+  <SiX className={`text-white ${className ?? ""}`} />
+);
+
+export const ThreadsIcon = ({ className }: IconProps) => (
+  <SiThreads className={`text-white ${className ?? ""}`} />
 );

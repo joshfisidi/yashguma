@@ -65,7 +65,7 @@ function FloatingLogos() {
   const texture = useLoader(TextureLoader, "/fisidi-particle.png");
 
   const particles = useMemo(() => {
-    return Array.from({ length: 80 }, () => ({
+    return Array.from({ length: 130 }, () => ({
       baseX: (Math.random() - 0.5) * 20,
       baseY: (Math.random() - 0.5) * 20,
       baseZ: (Math.random() - 0.5) * 10,

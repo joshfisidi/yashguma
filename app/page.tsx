@@ -113,9 +113,9 @@ export default function HomePage() {
 
       <div className="relative z-10 flex min-h-screen items-start justify-center px-4 pb-24 pt-8 text-center sm:items-center sm:pb-16 sm:pt-10">
         <section className="w-full max-w-[22rem] space-y-5 pt-2 sm:max-w-[26rem] lg:max-w-[30rem] xl:max-w-[32rem]">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
+          <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
             <span className="mist-title relative inline-block">
-              <span className="relative z-10 text-black">Yash Guma</span>
+              <span className="relative z-10 mist-title-main">Yash Guma</span>
               <span ref={mistARef} className="mist-title-layer mist-title-layer-a pointer-events-none" aria-hidden>
                 Yash Guma
               </span>
@@ -156,6 +156,12 @@ export default function HomePage() {
       <style jsx>{`
         .mist-title {
           text-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+        }
+
+        .mist-title-main {
+          color: #0a2f66;
+          -webkit-text-stroke: 1px #ffffff;
+          paint-order: stroke fill;
         }
 
         .mist-title-layer {
