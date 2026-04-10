@@ -51,12 +51,14 @@ export function StreamingServicesDrawer() {
           <ChevronUp className="h-4 w-4" />
         </button>
       </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader>
+      <DrawerContent
+        className="h-[100dvh] max-h-[100dvh] p-0 data-[vaul-drawer-direction=bottom]:mt-0 data-[vaul-drawer-direction=bottom]:max-h-[100dvh]"
+      >
+        <DrawerHeader className="pb-2">
           <DrawerTitle>Stream & social</DrawerTitle>
           <DrawerDescription>Choose a service, or a place to follow Yash Guma.</DrawerDescription>
         </DrawerHeader>
-        <div className="grid gap-4 px-4 pb-6 sm:grid-cols-2">
+        <div className="grid h-full grid-cols-2 gap-4 overflow-y-auto px-4 pb-6 pt-2">
           <section className="space-y-2">
             <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-300">Stream</h3>
             <div className="grid gap-2">
@@ -66,6 +68,7 @@ export function StreamingServicesDrawer() {
                   href={service.href}
                   icon={service.icon}
                   label={service.label}
+                  className="w-full"
                 />
               ))}
             </div>
@@ -80,6 +83,7 @@ export function StreamingServicesDrawer() {
                   href={service.href}
                   icon={service.icon}
                   label={service.label}
+                  className="w-full"
                 />
               ))}
             </div>
