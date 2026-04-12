@@ -72,7 +72,6 @@ export function SkewedCard({ children, className, imageSrc }: SkewedCardProps) {
               height={1125}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 70vw, 28rem"
               className="h-auto w-full rounded-[28px] object-cover object-center"
-              priority
               unoptimized
             />
           </div>

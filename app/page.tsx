@@ -1,12 +1,14 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useRef } from "react";
 import { animate } from "animejs";
-import { GenerativeBackground } from "@/components/generative-background";
-import { SkewedCard } from "@/components/skewed-card";
 import { MusicButton } from "@/components/music-button";
-import { StreamingServicesDrawer } from "@/components/streaming-services-drawer";
 import { AppleMusicIcon, SoundCloudIcon, SpotifyIcon } from "@/lib/icons";
+
+const GenerativeBackground = dynamic(() => import("@/components/generative-background").then((m) => m.GenerativeBackground), { ssr: false });
+const SkewedCard = dynamic(() => import("@/components/skewed-card").then((m) => m.SkewedCard));
+const StreamingServicesDrawer = dynamic(() => import("@/components/streaming-services-drawer").then((m) => m.StreamingServicesDrawer));
 
 const HERO_IMAGE =
   "https://cufummffmtitwhfisrlw.supabase.co/storage/v1/object/public/IMAGES/yashguma-fisidi-joshfisidi-phase1.PNG";
