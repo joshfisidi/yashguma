@@ -155,13 +155,18 @@ export default function HomePage() {
 
       <style jsx>{`
         .mist-title {
-          text-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+          text-shadow:
+            0 0 10px rgba(78, 148, 255, 0.7),
+            0 0 22px rgba(39, 108, 255, 0.55),
+            0 8px 24px rgba(0, 0, 0, 0.35);
         }
 
         .mist-title-main {
-          color: #0a2f66;
-          -webkit-text-stroke: 1px #ffffff;
-          paint-order: stroke fill;
+          color: #63a4ff;
+          text-shadow:
+            0 0 6px rgba(125, 180, 255, 0.95),
+            0 0 18px rgba(56, 122, 255, 0.75),
+            0 0 30px rgba(22, 87, 255, 0.45);
         }
 
         .mist-title-layer {

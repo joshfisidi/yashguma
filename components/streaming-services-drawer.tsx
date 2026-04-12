@@ -1,14 +1,7 @@
 "use client";
 
 import { MusicButton } from "@/components/music-button";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import {
   AmazonMusicIcon,
   AudiusIcon,
@@ -52,13 +45,8 @@ export function StreamingServicesDrawer() {
         </button>
       </DrawerTrigger>
       <DrawerContent>
-        <DrawerHeader className="pb-2">
-          <DrawerTitle>Stream & social</DrawerTitle>
-          <DrawerDescription>Choose a service, or a place to follow Yash Guma.</DrawerDescription>
-        </DrawerHeader>
-        <div className="grid grid-cols-2 gap-4 overflow-y-auto px-4 pb-6 pt-2">
+        <div className="grid grid-cols-2 gap-4 overflow-y-auto px-4 pb-6 pt-6">
           <section className="space-y-2">
-            <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-300">Stream</h3>
             <div className="grid gap-2">
               {STREAM_SERVICES.map((service) => (
                 <MusicButton
@@ -73,7 +61,6 @@ export function StreamingServicesDrawer() {
           </section>
 
           <section className="space-y-2">
-            <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-300">Social</h3>
             <div className="grid gap-2">
               {SOCIAL_SERVICES.map((service) => (
                 <MusicButton
