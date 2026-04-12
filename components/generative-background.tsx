@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
 import { TextureLoader } from "three";
@@ -110,8 +110,15 @@ function FloatingLogos() {
 }
 
 export function GenerativeBackground() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setIsVisible(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
   return (
-    <div className="fixed inset-0 -z-10">
+    <div className={`fixed inset-0 -z-10 transition-opacity duration-1000 ease-out ${isVisible ? "opacity-100" : "opacity-0"}`}>
       <Canvas
         camera={{ position: [0, 0, 8], fov: 60 }}
         style={{ background: "linear-gradient(to bottom, #090909, #111111)" }}
