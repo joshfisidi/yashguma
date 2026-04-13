@@ -17,9 +17,9 @@ function NoiseField() {
     const colors = new Float32Array(positions.count * 3);
 
     for (let i = 0; i < positions.count; i++) {
-      colors[i * 3] = 0.1;
-      colors[i * 3 + 1] = 0.8;
-      colors[i * 3 + 2] = 0.7;
+      colors[i * 3] = 0.07;
+      colors[i * 3 + 1] = 0.07;
+      colors[i * 3 + 2] = 0.07;
     }
 
     geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
@@ -43,9 +43,10 @@ function NoiseField() {
       positionArray[i * 3 + 2] = combined * 1.5;
 
       const normalizedNoise = (combined + 1) * 0.5;
-      colorArray[i * 3] = 0.1 + normalizedNoise * 0.2;
-      colorArray[i * 3 + 1] = 0.6 + normalizedNoise * 0.3;
-      colorArray[i * 3 + 2] = 0.6 + normalizedNoise * 0.2;
+      const shade = 0.05 + normalizedNoise * 0.09;
+      colorArray[i * 3] = shade;
+      colorArray[i * 3 + 1] = shade;
+      colorArray[i * 3 + 2] = shade + 0.01;
     }
 
     positions.needsUpdate = true;
@@ -54,7 +55,7 @@ function NoiseField() {
 
   return (
     <mesh ref={meshRef} geometry={geometry} rotation={[-Math.PI / 3, 0, 0]} position={[0, -2, -5]}>
-      <meshBasicMaterial vertexColors wireframe transparent opacity={0.4} />
+      <meshBasicMaterial vertexColors wireframe transparent opacity={0.32} />
     </mesh>
   );
 }
@@ -102,7 +103,7 @@ function FloatingLogos() {
           position={[particle.baseX, particle.baseY, particle.baseZ]}
           scale={[particle.scale, particle.scale, particle.scale]}
         >
-          <spriteMaterial map={texture} transparent opacity={0.22} depthWrite={false} />
+          <spriteMaterial map={texture} transparent opacity={0.12} depthWrite={false} />
         </sprite>
       ))}
     </group>
