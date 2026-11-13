@@ -1,0 +1,24 @@
+.carousel {
+  mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+}
+
+.carousel :global(.swiper-slide) {
+  width: min(15rem, calc(100vw - 2rem));
+  opacity: 0.42;
+}
+
+.carousel :global(.swiper-slide-active) {
+  opacity: 1;
+}
+
+@media (min-width: 640px) {
+  .carousel :global(.swiper-slide) {
+    width: 19rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .carousel :global(.swiper-slide) {
+    transition: opacity 300ms ease-out;
+  }
+}

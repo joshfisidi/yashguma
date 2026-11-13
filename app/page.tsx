@@ -8,7 +8,7 @@ import { MusicButton } from "@/components/music-button";
 import { AppleMusicIcon, SoundCloudIcon, SpotifyIcon } from "@/lib/icons";
 
 const AbyssBackground = dynamic(() => import("@/components/abyss-background").then((m) => m.AbyssBackground), { ssr: false });
-const SkewedCard = dynamic(() => import("@/components/skewed-card").then((m) => m.SkewedCard), {
+const PortraitCarousel = dynamic(() => import("@/components/portrait-carousel").then((m) => m.PortraitCarousel), {
   loading: () => <Skeleton aria-hidden className="portrait-skeleton aspect-[4/5] w-full rounded-[28px]" />,
 });
 const StreamingServicesDrawer = dynamic(() => import("@/components/streaming-services-drawer").then((m) => m.StreamingServicesDrawer), {
@@ -134,7 +134,7 @@ export default function HomePage() {
           </h1>
 
           <div className="mx-auto w-full max-w-[15rem] sm:max-w-[19rem] flex flex-col gap-5">
-            <SkewedCard imageSrc={HERO_IMAGE} className="w-full" />
+            <PortraitCarousel imageSrc={HERO_IMAGE} />
 
             <div className="home-fade flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:[&>*]:w-[calc((100%-0.75rem)/2)]">
               <MusicButton
