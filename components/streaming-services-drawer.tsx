@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, useMotionValue, useReducedMotion, useSpring } from "motion/react";
+import LiquidGlass from "liquid-glass-react";
 import { MusicButton } from "@/components/music-button";
 import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import {
@@ -33,6 +34,8 @@ const SOCIAL_SERVICES = [
   { label: "X", href: "https://x.com/yashguma", icon: <XIcon className="h-5 w-5" /> },
   { label: "Threads", href: "https://www.threads.net/@yashguma", icon: <ThreadsIcon className="h-5 w-5" /> },
 ];
+
+const stationaryGlass = { x: 0, y: 0 };
 
 export function StreamingServicesDrawer() {
   const [open, setOpen] = useState(false);
@@ -77,8 +80,26 @@ export function StreamingServicesDrawer() {
       <DrawerContent
         aria-describedby={undefined}
         overlayClassName="bg-black/25"
-        className="max-h-[85svh] overflow-hidden border-[#a1cbd5]/30 bg-[#0b202b]/55 text-[#d3e8ed] shadow-[0_-16px_64px_#0007,inset_0_1px_0_#c2f0ff33] backdrop-blur-xl backdrop-saturate-150 data-[vaul-drawer-direction=bottom]:rounded-t-[2rem] [&_[data-vaul-handle]]:z-10 [&_[data-vaul-handle]]:h-1.5 [&_[data-vaul-handle]]:w-14"
+        className="max-h-[85svh] overflow-hidden border-[#a1cbd5]/30 bg-transparent text-[#d3e8ed] shadow-[0_-16px_64px_#0007,inset_0_1px_0_#c2f0ff33] data-[vaul-drawer-direction=bottom]:rounded-t-[2rem] [&_[data-vaul-handle]]:z-10 [&_[data-vaul-handle]]:h-1.5 [&_[data-vaul-handle]]:w-14"
       >
+        <div aria-hidden="true" data-slot="drawer-glass" className="pointer-events-none absolute inset-0">
+          <LiquidGlass
+            className="h-full w-full [&>.glass]:h-full [&>.glass]:w-full"
+            style={{ position: "absolute", top: "50%", left: "50%" }}
+            padding="0"
+            cornerRadius={32}
+            displacementScale={24}
+            blurAmount={0.18}
+            saturation={135}
+            aberrationIntensity={0.5}
+            elasticity={0}
+            globalMousePos={stationaryGlass}
+            mouseOffset={stationaryGlass}
+          >
+            <span />
+          </LiquidGlass>
+          <div className="absolute inset-0 bg-[#0b202b]/65" />
+        </div>
         <motion.div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,#a9d8e23d,transparent_60%),linear-gradient(155deg,#7fa9b41c,transparent_48%,#5b9ba21f)]"
