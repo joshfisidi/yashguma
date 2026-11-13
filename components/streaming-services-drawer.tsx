@@ -19,9 +19,9 @@ import { ChevronUp } from "lucide-react";
 
 const STREAM_SERVICES = [
   { label: "YouTube Music", href: "https://music.youtube.com", icon: <YouTubeMusicIcon className="h-5 w-5" /> },
-  { label: "Deezer", href: "https://www.deezer.com", icon: <DeezerIcon className="h-5 w-5 text-white" /> },
-  { label: "TIDAL", href: "https://tidal.com", icon: <TidalIcon className="h-5 w-5 text-white" /> },
-  { label: "Audius", href: "https://audius.co", icon: <AudiusIcon className="h-5 w-5 text-white" /> },
+  { label: "Deezer", href: "https://www.deezer.com", icon: <DeezerIcon className="h-5 w-5" /> },
+  { label: "TIDAL", href: "https://tidal.com", icon: <TidalIcon className="h-5 w-5" /> },
+  { label: "Audius", href: "https://audius.co", icon: <AudiusIcon className="h-5 w-5" /> },
   { label: "Amazon Music", href: "https://music.amazon.com", icon: <AmazonMusicIcon className="h-5 w-5" /> },
 ];
 
@@ -52,7 +52,7 @@ export function StreamingServicesDrawer() {
       <DrawerTrigger asChild>
         <button
           type="button"
-          className="flex items-center justify-center gap-2 rounded-xl border border-neutral-800/80 bg-neutral-900/85 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-neutral-800/90 backdrop-blur-sm"
+          className="home-fade flex items-center justify-center gap-2 rounded-xl border border-[#26404b] bg-[#101f27]/90 px-4 py-3 text-sm font-medium transition-colors text-[#aec5cd] hover:bg-[#19333f] focus-visible:outline-[#8bb1bf] backdrop-blur-sm"
         >
           Other
           <ChevronUp className="h-4 w-4" />
@@ -60,17 +60,17 @@ export function StreamingServicesDrawer() {
       </DrawerTrigger>
       <DrawerContent
         aria-describedby={undefined}
-        className="max-h-[85svh] overflow-hidden border-white/10 bg-neutral-950/96 text-white backdrop-blur-xl"
+        className="max-h-[85svh] overflow-hidden border-[#26404b] bg-[#09151c]/96 text-[#aec5cd] backdrop-blur-xl"
       >
         <DrawerTitle className="sr-only">More streaming services and social links</DrawerTitle>
         <div className="min-h-0 overflow-y-auto overscroll-contain">
-          <div className="mx-auto grid max-w-4xl gap-5 px-4 pt-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:grid-cols-2 sm:gap-6 sm:px-6">
+          <div className="home-fade mx-auto grid max-w-4xl gap-5 px-4 pt-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:grid-cols-2 sm:gap-6 sm:px-6">
             {[
               { title: "Listen", services: STREAM_SERVICES },
               { title: "Social", services: SOCIAL_SERVICES },
             ].map(({ title, services }) => (
               <section key={title} className="min-w-0">
-                <h3 className="mb-2.5 text-sm font-medium text-slate-300">{title}</h3>
+                <h3 className="mb-2.5 text-sm font-medium text-[#9dbcc7]">{title}</h3>
                 <div className="grid grid-cols-3 gap-2">
                   {services.map((service, index) => (
                     <MusicButton
@@ -80,8 +80,8 @@ export function StreamingServicesDrawer() {
                       label={service.label}
                       className={
                         index === 0
-                          ? "col-span-2 min-h-20 justify-start rounded-2xl border-[#234553] bg-[#122b35] px-3 hover:bg-[#193844] focus-visible:outline-sky-300"
-                          : "min-h-20 flex-col gap-1.5 rounded-2xl border-white/10 bg-[#10191e] px-1.5 hover:bg-[#192b34] focus-visible:outline-sky-300 [&>span]:text-xs"
+                          ? "col-span-2 min-h-20 justify-start rounded-2xl border-[#234553] bg-[#122b35] px-3 hover:bg-[#193844] focus-visible:outline-[#8bb1bf]"
+                          : "min-h-20 flex-col gap-1.5 rounded-2xl border-[#223843] bg-[#101e27] px-1.5 hover:bg-[#192b34] focus-visible:outline-[#8bb1bf] [&>span]:text-xs"
                       }
                     />
                   ))}

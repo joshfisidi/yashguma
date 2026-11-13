@@ -123,3 +123,24 @@
     @apply bg-background text-foreground;
   }
 }
+
+.portrait-skeleton[data-slot="skeleton"] {
+  background-color: #172d38;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .home-fade {
+    animation: home-fade-in 700ms ease-out both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portrait-skeleton[data-slot="skeleton"] {
+    animation: none;
+  }
+}
+
+@keyframes home-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

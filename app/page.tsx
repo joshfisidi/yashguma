@@ -3,12 +3,18 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef } from "react";
 import { animate } from "animejs";
+import { Skeleton } from "@/components/ui/skeleton";
 import { MusicButton } from "@/components/music-button";
 import { AppleMusicIcon, SoundCloudIcon, SpotifyIcon } from "@/lib/icons";
 
 const AbyssBackground = dynamic(() => import("@/components/abyss-background").then((m) => m.AbyssBackground), { ssr: false });
-const SkewedCard = dynamic(() => import("@/components/skewed-card").then((m) => m.SkewedCard));
-const StreamingServicesDrawer = dynamic(() => import("@/components/streaming-services-drawer").then((m) => m.StreamingServicesDrawer));
+const SkewedCard = dynamic(() => import("@/components/skewed-card").then((m) => m.SkewedCard), {
+  loading: () => <Skeleton aria-hidden className="portrait-skeleton aspect-[4/5] w-full rounded-[28px]" />,
+});
+const StreamingServicesDrawer = dynamic(() => import("@/components/streaming-services-drawer").then((m) => m.StreamingServicesDrawer), {
+  ssr: false,
+  loading: () => <Skeleton aria-hidden className="portrait-skeleton h-[46px] rounded-xl" />,
+});
 
 const HERO_IMAGE =
   "https://cufummffmtitwhfisrlw.supabase.co/storage/v1/object/public/IMAGES/yashguma-fisidi-joshfisidi-phase1.PNG";
@@ -26,7 +32,7 @@ export default function HomePage() {
   useEffect(() => {
     const layers = [mistARef.current, mistBRef.current].filter(Boolean) as HTMLSpanElement[];
 
-    if (!layers.length) return;
+    if (!layers.length || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     let isCancelled = false;
     const activeAnimations = new Set<ReturnType<typeof animate>>();
@@ -110,12 +116,12 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="relative min-h-screen overflow-hidden pb-[14svh]">
+    <main className="relative min-h-screen overflow-hidden bg-[#050d12] pb-[14svh]">
       <AbyssBackground />
 
       <div className="relative z-10 flex min-h-screen items-start justify-center px-4 pb-24 pt-8 text-center sm:items-center sm:pb-16 sm:pt-10">
         <section className="w-full max-w-[22rem] space-y-5 pt-2 sm:max-w-[26rem] lg:max-w-[30rem] xl:max-w-[32rem]">
-          <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
+          <h1 className="home-fade text-4xl font-bold tracking-tight sm:text-6xl">
             <span className="mist-title relative inline-block">
               <span className="relative z-10 mist-title-main">Yash Guma</span>
               <span ref={mistARef} className="mist-title-layer mist-title-layer-a pointer-events-none" aria-hidden>
@@ -130,7 +136,7 @@ export default function HomePage() {
           <div className="mx-auto w-full max-w-[15rem] sm:max-w-[19rem] flex flex-col gap-5">
             <SkewedCard imageSrc={HERO_IMAGE} className="w-full" />
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:[&>*]:w-[calc((100%-0.75rem)/2)]">
+            <div className="home-fade flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:[&>*]:w-[calc((100%-0.75rem)/2)]">
               <MusicButton
                 href="https://spotify.com"
                 icon={<SpotifyIcon className="h-5 w-5" />}
@@ -158,17 +164,17 @@ export default function HomePage() {
       <style jsx>{`
         .mist-title {
           text-shadow:
-            0 0 10px rgba(78, 148, 255, 0.7),
-            0 0 22px rgba(39, 108, 255, 0.55),
+            0 0 10px rgba(53, 102, 121, 0.36),
+            0 0 22px rgba(25, 72, 85, 0.35),
             0 8px 24px rgba(0, 0, 0, 0.35);
         }
 
         .mist-title-main {
-          color: #63a4ff;
+          color: #9dbcc7;
           text-shadow:
-            0 0 6px rgba(125, 180, 255, 0.95),
-            0 0 18px rgba(56, 122, 255, 0.75),
-            0 0 30px rgba(22, 87, 255, 0.45);
+            0 0 6px rgba(106, 150, 165, 0.45),
+            0 0 18px rgba(54, 105, 123, 0.42),
+            0 0 30px rgba(28, 78, 91, 0.35);
         }
 
         .mist-title-layer {

@@ -164,5 +164,5 @@ export function AbyssBackground() {
     };
   }, []);
 
-  return <canvas ref={canvasRef} aria-hidden="true" className="pointer-events-none fixed inset-0 h-full w-full bg-black" />;
+  return <canvas ref={canvasRef} aria-hidden="true" className="home-fade pointer-events-none fixed inset-0 h-full w-full" />;
 }

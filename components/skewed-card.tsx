@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState, useRef, type MouseEvent, type ReactNode } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -72,6 +73,8 @@ export function SkewedCard({ children, className, imageSrc }: SkewedCardProps) {
     if (typeof window !== "undefined" && window.innerWidth >= 768) setIsHovered(true);
   };
 
+  const [settledImage, setSettledImage] = useState<string>();
+  const imagePending = settledImage !== imageSrc;
   const hasContent = children !== undefined && children !== null;
 
   return (
@@ -96,14 +99,22 @@ export function SkewedCard({ children, className, imageSrc }: SkewedCardProps) {
           }}
         >
           {imageSrc ? (
-            <div className="relative w-full">
+            <div className="relative aspect-[4/5] w-full bg-[#0d1e27]">
+              {imagePending && <Skeleton aria-hidden className="portrait-skeleton absolute inset-0 rounded-[28px]" />}
               <Image
+                key={imageSrc}
+                loading="lazy"
+                onLoad={() => setSettledImage(imageSrc)}
+                onError={() => setSettledImage(imageSrc)}
                 src={imageSrc}
                 alt="Yash Guma visual"
                 width={900}
                 height={1125}
                 sizes="(max-width: 639px) 15rem, 19rem"
-                className="h-auto w-full rounded-[28px] object-cover object-center"
+                className={cn(
+                  "relative h-full w-full rounded-[28px] object-cover object-center text-[#aec5cd] transition-opacity duration-700 ease-out motion-reduce:transition-none",
+                  imagePending ? "opacity-0" : "opacity-100",
+                )}
                 unoptimized
               />
             </div>
