@@ -6,7 +6,7 @@ import { animate } from "animejs";
 import { MusicButton } from "@/components/music-button";
 import { AppleMusicIcon, SoundCloudIcon, SpotifyIcon } from "@/lib/icons";
 
-const GenerativeBackground = dynamic(() => import("@/components/generative-background").then((m) => m.GenerativeBackground), { ssr: false });
+const AbyssBackground = dynamic(() => import("@/components/abyss-background").then((m) => m.AbyssBackground), { ssr: false });
 const SkewedCard = dynamic(() => import("@/components/skewed-card").then((m) => m.SkewedCard));
 const StreamingServicesDrawer = dynamic(() => import("@/components/streaming-services-drawer").then((m) => m.StreamingServicesDrawer));
 
@@ -111,7 +111,7 @@ export default function HomePage() {
 
   return (
     <main className="relative min-h-screen overflow-hidden">
-      <GenerativeBackground />
+      <AbyssBackground />
 
       <div className="relative z-10 flex min-h-screen items-start justify-center px-4 pb-24 pt-8 text-center sm:items-center sm:pb-16 sm:pt-10">
         <section className="w-full max-w-[22rem] space-y-5 pt-2 sm:max-w-[26rem] lg:max-w-[30rem] xl:max-w-[32rem]">

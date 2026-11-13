@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { MusicButton } from "@/components/music-button";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import {
   AmazonMusicIcon,
   AudiusIcon,
@@ -58,7 +58,11 @@ export function StreamingServicesDrawer() {
           <ChevronUp className="h-4 w-4" />
         </button>
       </DrawerTrigger>
-      <DrawerContent className="max-h-[85svh] overflow-hidden border-white/10 bg-neutral-950/96 text-white backdrop-blur-xl">
+      <DrawerContent
+        aria-describedby={undefined}
+        className="max-h-[85svh] overflow-hidden border-white/10 bg-neutral-950/96 text-white backdrop-blur-xl"
+      >
+        <DrawerTitle className="sr-only">More streaming services and social links</DrawerTitle>
         <div className="grid max-h-[85svh] grid-cols-1 gap-4 overflow-y-auto px-4 pb-6 pt-6 sm:grid-cols-2">
           <section className="space-y-2">
             <div className="grid gap-2">
