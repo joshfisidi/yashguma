@@ -127,30 +127,30 @@ export default function HomePage() {
             </span>
           </h1>
 
-          <div className="mx-auto w-full max-w-[15rem] sm:max-w-[19rem]">
+          <div className="mx-auto w-full max-w-[15rem] sm:max-w-[19rem] flex flex-col gap-5">
             <SkewedCard imageSrc={HERO_IMAGE} className="w-full" />
-          </div>
 
-          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <MusicButton
-              href="https://spotify.com"
-              icon={<SpotifyIcon className="h-5 w-5" />}
-              label="Spotify"
-            />
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:[&>*]:w-[calc((100%-0.75rem)/2)]">
+              <MusicButton
+                href="https://spotify.com"
+                icon={<SpotifyIcon className="h-5 w-5" />}
+                label="Spotify"
+              />
 
-            <MusicButton
-              href="https://music.apple.com"
-              icon={<AppleMusicIcon className="h-5 w-5" />}
-              label="Apple Music"
-            />
+              <MusicButton
+                href="https://music.apple.com"
+                icon={<AppleMusicIcon className="h-5 w-5" />}
+                label="Apple Music"
+              />
 
-            <MusicButton
-              href="https://soundcloud.com"
-              icon={<SoundCloudIcon className="h-5 w-5" />}
-              label="SoundCloud"
-            />
+              <MusicButton
+                href="https://soundcloud.com"
+                icon={<SoundCloudIcon className="h-5 w-5" />}
+                label="SoundCloud"
+              />
 
-            <StreamingServicesDrawer />
+              <StreamingServicesDrawer />
+            </div>
           </div>
         </section>
       </div>
