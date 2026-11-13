@@ -5,7 +5,7 @@ attribute vec2 position;
 void main() { gl_Position = vec4(position, 0.0, 1.0); }
 `;
 
-export const surfaceFragment = `
+export const surfaceFragment = (smokePuffCount: number, smokeLifetime: number) => `
 precision highp float;
 uniform float uTime;
 uniform vec2  uRes;
@@ -13,6 +13,8 @@ uniform float uAngle;
 uniform sampler2D uSimV;   // (vx, vy, h, \u2013)
 uniform sampler2D uSimD;   // (Dx, Dy, luminescence, \u2013)
 uniform vec2 uSimTexel;
+uniform vec4 uSmoke[${smokePuffCount}];
+const float SMOKE_LIFETIME = ${smokeLifetime.toFixed(1)};
 
 // --- Ashima simplex 3D ---
 vec4 permute(vec4 x){ return mod(((x*34.0)+1.0)*x, 289.0); }
@@ -83,11 +85,11 @@ vec2 field(vec2 f, float t){
 vec3 palette(float v){
   v = clamp(v, 0.0, 1.0);
   vec3 c0 = vec3(0.0);
-  vec3 c1 = vec3(2.0, 1.0, 18.0) / 255.0;
-  vec3 c2 = vec3(5.0, 6.0, 57.0) / 255.0;
-  vec3 c3 = vec3(8.0, 16.0, 124.0) / 255.0;
-  vec3 c4 = vec3(17.0, 84.0, 237.0) / 255.0;
-  vec3 c5 = vec3(108.0, 178.0, 255.0) / 255.0;
+  vec3 c1 = vec3(4.0, 10.0, 14.0) / 255.0;
+  vec3 c2 = vec3(9.0, 24.0, 32.0) / 255.0;
+  vec3 c3 = vec3(10.0, 39.0, 53.0) / 255.0;
+  vec3 c4 = vec3(14.0, 55.0, 72.0) / 255.0;
+  vec3 c5 = vec3(23.0, 70.0, 89.0) / 255.0;
   vec3 c = mix(c0, c1, smoothstep(0.00, 0.12, v));
   c = mix(c, c2, smoothstep(0.12, 0.32, v));
   c = mix(c, c3, smoothstep(0.32, 0.55, v));
@@ -103,6 +105,28 @@ vec2 toFlow(vec2 uv, float t){
   vec2 f = vec2(dot(uv, dir), dot(uv, vec2(-dir.y, dir.x)));
   f.x -= t * 0.018;                                           // sheets slide downstream
   return f;
+}
+
+float smokeDensity(vec2 uv, float t){
+  float density = 0.0;
+  for (int i = 0; i < ${smokePuffCount}; i++) {
+    vec4 puff = uSmoke[i];
+    float age = t - puff.z;
+    if (puff.w == 0.0 || age >= SMOKE_LIFETIME) continue;
+
+    vec2 center = (puff.xy - 0.5) * vec2(uRes.x / uRes.y, 1.0);
+    center += vec2(0.022 * sin(age * 3.0 + puff.z * 4.0) * age, 0.058 * age);
+    float size = 0.065 + 0.047 * age;
+    vec2 p = (uv - center) / size;
+    float distance = dot(p, p);
+    if (distance > 3.0) continue;
+
+    float wisps = fbm(vec3(p * 1.75 + vec2(puff.z * 0.37, -age * 0.65), puff.z * 0.29 + age * 0.4));
+    float shape = 1.0 - smoothstep(0.05, 1.8, distance + 1.3 * wisps);
+    float fade = (1.0 - smoothstep(0.18, SMOKE_LIFETIME, age)) * smoothstep(-0.03, 0.12, age);
+    density += shape * fade * puff.w * smoothstep(-0.45, 0.38, wisps);
+  }
+  return density;
 }
 
 void main(){
@@ -147,10 +171,11 @@ void main(){
           + sheet * shard * (0.25 + 0.45 * spec)
           + (1.0 - inversesqrt(1.0 + dot(gs, gs) * 4e-4)) * 0.9; // bare water: lit only where the sim tilts it
   v *= mix(0.3, 1.0, band) * mix(0.7, 1.0, vig);
-  v = 1.9 * pow(v, 1.45);                                 // tone curve: crush mids, keep cobalt peaks
+  v = 1.9 * pow(v, 1.45);                                 // keep the background dark outside the highlights
   v += M.z * (0.7 + 0.3 * sheet);                         // stressed plankton glow (post-curve so faint glow isn't crushed)
 
-  vec3 col = palette(v);
+  float smoke = smokeDensity(uv, t);
+  vec3 col = palette(v) + palette(min(smoke, 1.0)) * 0.85;
 
   col += (hash12(gl_FragCoord.xy + fract(t) * 91.7) - 0.5) / 255.0;
   gl_FragColor = vec4(col, 1.0);

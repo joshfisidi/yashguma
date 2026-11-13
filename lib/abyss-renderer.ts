@@ -10,12 +10,14 @@ import {
 } from "./abyss-shaders";
 
 type Target = { texture: WebGLTexture; framebuffer: WebGLFramebuffer };
-type Uniform = number | readonly number[] | WebGLTexture;
+type Uniform = number | readonly number[] | Float32Array | WebGLTexture;
 type Splat = { point: readonly number[]; force: readonly number[]; radial?: number };
 
 const simulationHeight = 128;
 const step = 1 / 120;
 const radius = 0.045;
+const smokePuffCount = 16;
+const smokeLifetime = 2;
 
 export function createAbyssRenderer(canvas: HTMLCanvasElement) {
   const context = canvas.getContext("webgl2", { alpha: false, antialias: false, depth: false });
@@ -86,6 +88,7 @@ export function createAbyssRenderer(canvas: HTMLCanvasElement) {
         if (!locations.has(name)) locations.set(name, gl.getUniformLocation(program, name));
         const location = locations.get(name) ?? null;
         if (typeof value === "number") gl.uniform1f(location, value);
+        else if (value instanceof Float32Array) gl.uniform4fv(location, value);
         else if (value instanceof WebGLTexture) {
           gl.activeTexture(gl.TEXTURE0 + unit);
           gl.bindTexture(gl.TEXTURE_2D, value);
@@ -156,7 +159,7 @@ export function createAbyssRenderer(canvas: HTMLCanvasElement) {
     gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 16, 8);
 
     empty = createTexture(1, 1, false);
-    const drawSurface = createPass(surfaceVertex, surfaceFragment);
+    const drawSurface = createPass(surfaceVertex, surfaceFragment(smokePuffCount, smokeLifetime));
     const canSimulate = gl.getExtension("EXT_color_buffer_float") || gl.getExtension("EXT_color_buffer_half_float");
     const passes = canSimulate && {
       splat: createPass(simulationVertex, splatFragment),
@@ -171,13 +174,30 @@ export function createAbyssRenderer(canvas: HTMLCanvasElement) {
     let pending: Splat[] = [];
     let heldPoint: readonly number[] | undefined;
     let lastPointer: { x: number; y: number; time: number } | undefined;
+    const smoke = new Float32Array(smokePuffCount * 4);
+    let nextPuff = 0;
+    let lastSmokeTime = -Infinity;
+    let lastSmokeX = 0;
+    let lastSmokeY = 0;
+
+    function stirSmoke(x: number, y: number, time: number, initial: boolean) {
+      const distance = Math.hypot((x - lastSmokeX) * canvas.width / canvas.height, y - lastSmokeY);
+      if (!initial && (time - lastSmokeTime < 0.045 || distance < 0.016)) return;
+      smoke.set([x, y, time, initial ? 1 : 0.7], nextPuff * 4);
+      nextPuff = (nextPuff + 1) % smokePuffCount;
+      lastSmokeTime = time;
+      lastSmokeX = x;
+      lastSmokeY = y;
+    }
 
     function resize() {
       const width = Math.max(1, canvas.clientWidth);
       const height = Math.max(1, canvas.clientHeight);
       const scale = Math.min(1, Math.sqrt(1_250_000 / (width * height)));
-      canvas.width = Math.max(1, Math.round(width * scale));
-      canvas.height = Math.max(1, Math.round(height * scale));
+      const renderWidth = Math.max(1, Math.round(width * scale));
+      const renderHeight = Math.max(1, Math.round(height * scale));
+      if (canvas.width !== renderWidth) canvas.width = renderWidth;
+      if (canvas.height !== renderHeight) canvas.height = renderHeight;
 
       const nextWidth = Math.min(gl.getParameter(gl.MAX_TEXTURE_SIZE), Math.max(16, Math.round(simulationHeight * width / height)));
       if (!passes || nextWidth === simulationWidth) return;
@@ -228,6 +248,7 @@ export function createAbyssRenderer(canvas: HTMLCanvasElement) {
 
       drawSurface(null, {
         uTime: time, uRes: [canvas.width, canvas.height], uAngle: 0.38,
+        "uSmoke[0]": smoke,
         uSimV: targets?.velocity[0].texture ?? empty, uSimD: targets?.material[0].texture ?? empty,
         uSimTexel: targets ? texel : [1, 1],
       });
@@ -262,7 +283,7 @@ export function createAbyssRenderer(canvas: HTMLCanvasElement) {
       heldPoint = undefined;
     }
 
-    return { resize, render, pointer, release, destroy };
+    return { resize, render, pointer, stirSmoke, release, destroy };
   } catch (error) {
     destroy();
     console.warn("Abyss background could not start", error);
