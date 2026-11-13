@@ -125,6 +125,9 @@ importers:
       lucide-react:
         specifier: ^0.564.0
         version: 0.564.0(react@19.2.4)
+      motion:
+        specifier: ^14.12.0
+        version: 14.12.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next:
         specifier: 16.2.0
         version: 16.2.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -1452,6 +1455,20 @@ packages:
   fraction.js@5.3.4:
     resolution: {integrity: sha512-1X1NTtiJphryn/uLQz3whtY6jK3fTqoE3ohKs0tT+Ujr1W59oopxmoEh7Lu5p6vBaPbgoM0bzveAW4Qi5RyWDQ==}
 
+  framer-motion@14.12.0:
+    resolution: {integrity: sha512-4m+10xYan0ic8nFI8zyB5hJkW5F8F4Rer617UecOs8esw0he9unDgXaEZ0rUX7oztz1w4iuvyPWhk4jltMX5iw==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+      remix: ^3.1.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+      remix:
+        optional: true
+
   get-nonce@1.0.1:
     resolution: {integrity: sha512-FJhYRoDaiatfEkUK8HKlicmu/3SGFD51q3itKDGoSTysQJBnfOcxU5GxnhE1E6soB76MbT0MBtnKJuXyAx+96Q==}
     engines: {node: '>=6'}
@@ -1572,6 +1589,26 @@ packages:
 
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
+
+  motion-dom@14.12.0:
+    resolution: {integrity: sha512-YnAY17g8mXRVoXGZbH+v/O2SkNBJqz2TMuqL9yek9Omfhsdjw7gJwNgI5nsGZFpbbm3vINyOo+VtGPryIslatw==}
+
+  motion-utils@14.7.0:
+    resolution: {integrity: sha512-woO0/Nb7ys75f94fjvQi/6leiHGvZUYkeHUPEZ3vxsV+9OpEVhkxp01x8MlRwX0zt31EqgXsKDAoBoJLC148Tw==}
+
+  motion@14.12.0:
+    resolution: {integrity: sha512-cxD0c0yGXo/mzPgveXMsXGl138UNsRit9XgInK8kThtDsrvIkhlAR9b6WYoAm7EmKWToMFx6v/G8i0Zjv+2uoA==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+      remix: ^3.1.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+      remix:
+        optional: true
 
   nanoid@3.3.11:
     resolution: {integrity: sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==}
@@ -3010,6 +3047,15 @@ snapshots:
 
   fraction.js@5.3.4: {}
 
+  framer-motion@14.12.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+    dependencies:
+      motion-dom: 14.12.0
+      motion-utils: 14.7.0
+      tslib: 2.8.1
+    optionalDependencies:
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+
   get-nonce@1.0.1: {}
 
   graceful-fs@4.2.11: {}
@@ -3096,6 +3142,20 @@ snapshots:
   magic-string@0.30.21:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  motion-dom@14.12.0:
+    dependencies:
+      motion-utils: 14.7.0
+
+  motion-utils@14.7.0: {}
+
+  motion@14.12.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+    dependencies:
+      framer-motion: 14.12.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      tslib: 2.8.1
+    optionalDependencies:
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
 
   nanoid@3.3.11: {}
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion, useMotionValue, useReducedMotion, useSpring } from "motion/react";
 import { MusicButton } from "@/components/music-button";
 import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import {
@@ -35,6 +36,9 @@ const SOCIAL_SERVICES = [
 
 export function StreamingServicesDrawer() {
   const [open, setOpen] = useState(false);
+  const reduceMotion = useReducedMotion();
+  const sheen = useMotionValue(1);
+  const sheenOpacity = useSpring(sheen, { stiffness: 240, damping: 30 });
 
   useEffect(() => {
     if (!open) return;
@@ -48,7 +52,19 @@ export function StreamingServicesDrawer() {
   }, [open]);
 
   return (
-    <Drawer open={open} onOpenChange={setOpen} repositionInputs={false} handleOnly>
+    <Drawer
+      open={open}
+      onOpenChange={(nextOpen) => {
+        sheen.set(1);
+        setOpen(nextOpen);
+      }}
+      onDrag={(_, progress) => {
+        if (!reduceMotion) sheen.set(1 - Math.min(1, Math.max(0, progress)) * 0.65);
+      }}
+      onRelease={() => sheen.set(1)}
+      repositionInputs={false}
+      handleOnly
+    >
       <DrawerTrigger asChild>
         <button
           type="button"
@@ -60,35 +76,46 @@ export function StreamingServicesDrawer() {
       </DrawerTrigger>
       <DrawerContent
         aria-describedby={undefined}
-        className="max-h-[85svh] overflow-hidden border-[#26404b] bg-[#09151c]/96 text-[#aec5cd] backdrop-blur-xl"
+        overlayClassName="bg-black/25"
+        className="max-h-[85svh] overflow-hidden border-[#a1cbd5]/30 bg-[#0b202b]/55 text-[#d3e8ed] shadow-[0_-16px_64px_#0007,inset_0_1px_0_#c2f0ff33] backdrop-blur-xl backdrop-saturate-150 data-[vaul-drawer-direction=bottom]:rounded-t-[2rem] [&_[data-vaul-handle]]:z-10 [&_[data-vaul-handle]]:h-1.5 [&_[data-vaul-handle]]:w-14"
       >
+        <motion.div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,#a9d8e23d,transparent_60%),linear-gradient(155deg,#7fa9b41c,transparent_48%,#5b9ba21f)]"
+          style={{ opacity: sheenOpacity }}
+        />
         <DrawerTitle className="sr-only">More streaming services and social links</DrawerTitle>
-        <div className="min-h-0 overflow-y-auto overscroll-contain">
-          <div className="home-fade mx-auto grid max-w-4xl gap-5 px-4 pt-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:grid-cols-2 sm:gap-6 sm:px-6">
-            {[
-              { title: "Listen", services: STREAM_SERVICES },
-              { title: "Social", services: SOCIAL_SERVICES },
-            ].map(({ title, services }) => (
-              <section key={title} className="min-w-0">
-                <h3 className="mb-2.5 text-sm font-medium text-[#9dbcc7]">{title}</h3>
-                <div className="grid grid-cols-3 gap-2">
-                  {services.map((service, index) => (
-                    <MusicButton
-                      key={service.label}
-                      href={service.href}
-                      icon={service.icon}
-                      label={service.label}
-                      className={
-                        index === 0
-                          ? "col-span-2 min-h-20 justify-start rounded-2xl border-[#234553] bg-[#122b35] px-3 hover:bg-[#193844] focus-visible:outline-[#8bb1bf]"
-                          : "min-h-20 flex-col gap-1.5 rounded-2xl border-[#223843] bg-[#101e27] px-1.5 hover:bg-[#192b34] focus-visible:outline-[#8bb1bf] [&>span]:text-xs"
-                      }
-                    />
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
+        <div className="relative min-h-0 overflow-y-auto overscroll-contain">
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.38, ease: "easeOut" }}
+            className="mx-auto grid max-w-4xl gap-5 px-4 pt-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:grid-cols-2 sm:gap-6 sm:px-6"
+          >
+              {[
+                { title: "Listen", services: STREAM_SERVICES },
+                { title: "Social", services: SOCIAL_SERVICES },
+              ].map(({ title, services }) => (
+                <section key={title} className="min-w-0">
+                  <h3 className="mb-2.5 text-sm font-medium text-[#9dbcc7]">{title}</h3>
+                  <div className="grid grid-cols-3 gap-2">
+                    {services.map((service, index) => (
+                      <MusicButton
+                        key={service.label}
+                        href={service.href}
+                        icon={service.icon}
+                        label={service.label}
+                        className={
+                          index === 0
+                            ? "col-span-2 min-h-20 justify-start rounded-2xl border-[#a1cbd5]/25 bg-[#3a6372]/40 px-3 text-[#d3e8ed] hover:bg-[#3a6372]/65 focus-visible:outline-[#8bb1bf]"
+                            : "min-h-20 flex-col gap-1.5 rounded-2xl border-[#a1cbd5]/15 bg-[#132b37]/50 px-1.5 text-[#d3e8ed] hover:bg-[#31515f]/65 focus-visible:outline-[#8bb1bf] [&>span]:text-xs"
+                        }
+                      />
+                    ))}
+                  </div>
+                </section>
+              ))}
+          </motion.div>
         </div>
       </DrawerContent>
     </Drawer>
