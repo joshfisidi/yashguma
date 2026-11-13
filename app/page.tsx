@@ -110,7 +110,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="relative min-h-screen overflow-hidden">
+    <main className="relative min-h-screen overflow-hidden pb-[14svh]">
       <AbyssBackground />
 
       <div className="relative z-10 flex min-h-screen items-start justify-center px-4 pb-24 pt-8 text-center sm:items-center sm:pb-16 sm:pt-10">
@@ -127,7 +127,7 @@ export default function HomePage() {
             </span>
           </h1>
 
-          <div className="mx-auto w-full">
+          <div className="mx-auto w-full max-w-[15rem] sm:max-w-[19rem]">
             <SkewedCard imageSrc={HERO_IMAGE} className="w-full" />
           </div>
 

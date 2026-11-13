@@ -18,16 +18,16 @@ import {
 import { ChevronUp } from "lucide-react";
 
 const STREAM_SERVICES = [
+  { label: "YouTube Music", href: "https://music.youtube.com", icon: <YouTubeMusicIcon className="h-5 w-5" /> },
   { label: "Deezer", href: "https://www.deezer.com", icon: <DeezerIcon className="h-5 w-5 text-white" /> },
   { label: "TIDAL", href: "https://tidal.com", icon: <TidalIcon className="h-5 w-5 text-white" /> },
   { label: "Audius", href: "https://audius.co", icon: <AudiusIcon className="h-5 w-5 text-white" /> },
-  { label: "YouTube Music", href: "https://music.youtube.com", icon: <YouTubeMusicIcon className="h-5 w-5" /> },
   { label: "Amazon Music", href: "https://music.amazon.com", icon: <AmazonMusicIcon className="h-5 w-5" /> },
 ];
 
 const SOCIAL_SERVICES = [
   { label: "Instagram", href: "https://www.instagram.com/yashguma", icon: <InstagramIcon className="h-5 w-5" /> },
-  { label: "Tiktok", href: "https://www.tiktok.com/@yashguma", icon: <TiktokIcon className="h-5 w-5" /> },
+  { label: "TikTok", href: "https://www.tiktok.com/@yashguma", icon: <TiktokIcon className="h-5 w-5" /> },
   { label: "Snapchat", href: "https://www.snapchat.com/add/yashguma", icon: <SnapchatIcon className="h-5 w-5" /> },
   { label: "X", href: "https://x.com/yashguma", icon: <XIcon className="h-5 w-5" /> },
   { label: "Threads", href: "https://www.threads.net/@yashguma", icon: <ThreadsIcon className="h-5 w-5" /> },
@@ -48,7 +48,7 @@ export function StreamingServicesDrawer() {
   }, [open]);
 
   return (
-    <Drawer open={open} onOpenChange={setOpen} repositionInputs={false}>
+    <Drawer open={open} onOpenChange={setOpen} repositionInputs={false} handleOnly>
       <DrawerTrigger asChild>
         <button
           type="button"
@@ -63,34 +63,32 @@ export function StreamingServicesDrawer() {
         className="max-h-[85svh] overflow-hidden border-white/10 bg-neutral-950/96 text-white backdrop-blur-xl"
       >
         <DrawerTitle className="sr-only">More streaming services and social links</DrawerTitle>
-        <div className="grid max-h-[85svh] grid-cols-1 gap-4 overflow-y-auto px-4 pb-6 pt-6 sm:grid-cols-2">
-          <section className="space-y-2">
-            <div className="grid gap-2">
-              {STREAM_SERVICES.map((service) => (
-                <MusicButton
-                  key={service.label}
-                  href={service.href}
-                  icon={service.icon}
-                  label={service.label}
-                  className="w-full justify-start"
-                />
-              ))}
-            </div>
-          </section>
-
-          <section className="space-y-2">
-            <div className="grid gap-2">
-              {SOCIAL_SERVICES.map((service) => (
-                <MusicButton
-                  key={service.label}
-                  href={service.href}
-                  icon={service.icon}
-                  label={service.label}
-                  className="w-full justify-start"
-                />
-              ))}
-            </div>
-          </section>
+        <div className="min-h-0 overflow-y-auto overscroll-contain">
+          <div className="mx-auto grid max-w-4xl gap-5 px-4 pt-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:grid-cols-2 sm:gap-6 sm:px-6">
+            {[
+              { title: "Listen", services: STREAM_SERVICES },
+              { title: "Social", services: SOCIAL_SERVICES },
+            ].map(({ title, services }) => (
+              <section key={title} className="min-w-0">
+                <h3 className="mb-2.5 text-sm font-medium text-slate-300">{title}</h3>
+                <div className="grid grid-cols-3 gap-2">
+                  {services.map((service, index) => (
+                    <MusicButton
+                      key={service.label}
+                      href={service.href}
+                      icon={service.icon}
+                      label={service.label}
+                      className={
+                        index === 0
+                          ? "col-span-2 min-h-20 justify-start rounded-2xl border-[#234553] bg-[#122b35] px-3 hover:bg-[#193844] focus-visible:outline-sky-300"
+                          : "min-h-20 flex-col gap-1.5 rounded-2xl border-white/10 bg-[#10191e] px-1.5 hover:bg-[#192b34] focus-visible:outline-sky-300 [&>span]:text-xs"
+                      }
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
         </div>
       </DrawerContent>
     </Drawer>

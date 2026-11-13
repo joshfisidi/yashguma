@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useRef, type MouseEvent, type ReactNode } from "react";
+import { useEffect, useState, useRef, type MouseEvent, type ReactNode } from "react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -13,8 +13,39 @@ interface SkewedCardProps {
 
 export function SkewedCard({ children, className, imageSrc }: SkewedCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    const layer = scrollRef.current;
+    if (!layer) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let lastScroll = window.scrollY;
+    let settleTimer = 0;
+
+    const reset = () => layer.style.removeProperty("transform");
+    const handleScroll = () => {
+      const scroll = Math.max(0, window.scrollY);
+      const delta = scroll - lastScroll;
+      lastScroll = scroll;
+      if (reducedMotion.matches || delta === 0) return;
+
+      const tilt = Math.max(-11, Math.min(11, delta * 1.35));
+      layer.style.transform = `rotateX(${tilt}deg) rotateY(${tilt * -0.4}deg) skewY(${tilt * 0.16}deg)`;
+      window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(reset, 140);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    reducedMotion.addEventListener("change", reset);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      reducedMotion.removeEventListener("change", reset);
+      window.clearTimeout(settleTimer);
+    };
+  }, []);
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current || typeof window === "undefined" || window.innerWidth < 768) return;
@@ -52,40 +83,42 @@ export function SkewedCard({ children, className, imageSrc }: SkewedCardProps) {
       onMouseLeave={handleMouseLeave}
       onMouseEnter={handleMouseEnter}
     >
-      <Card
-        className={cn(
-          "relative overflow-hidden rounded-[28px] border-none bg-transparent p-0 shadow-none transition-all duration-200 ease-out",
-          isHovered && "shadow-xl shadow-black/25",
-          className,
-        )}
-        style={{
-          transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) scale(${isHovered ? 1.01 : 1})`,
-          transformStyle: "preserve-3d",
-        }}
-      >
-        {imageSrc ? (
-          <div className="relative w-full">
-            <Image
-              src={imageSrc}
-              alt="Yash Guma visual"
-              width={900}
-              height={1125}
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 70vw, 28rem"
-              className="h-auto w-full rounded-[28px] object-cover object-center"
-              unoptimized
-            />
-          </div>
-        ) : null}
+      <div ref={scrollRef} className="transform-3d transition-transform duration-300 ease-out motion-reduce:transform-none motion-reduce:transition-none">
+        <Card
+          className={cn(
+            "relative overflow-hidden rounded-[28px] border-none bg-transparent p-0 shadow-none transition-all duration-200 ease-out motion-reduce:transform-none!",
+            isHovered && "shadow-xl shadow-black/25",
+            className,
+          )}
+          style={{
+            transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) scale(${isHovered ? 1.01 : 1})`,
+            transformStyle: "preserve-3d",
+          }}
+        >
+          {imageSrc ? (
+            <div className="relative w-full">
+              <Image
+                src={imageSrc}
+                alt="Yash Guma visual"
+                width={900}
+                height={1125}
+                sizes="(max-width: 639px) 15rem, 19rem"
+                className="h-auto w-full rounded-[28px] object-cover object-center"
+                unoptimized
+              />
+            </div>
+          ) : null}
 
-        {hasContent ? (
-          <div
-            className="absolute inset-0 p-6"
-            style={{ transform: "translateZ(24px)" }}
-          >
-            {children}
-          </div>
-        ) : null}
-      </Card>
+          {hasContent ? (
+            <div
+              className="absolute inset-0 p-6"
+              style={{ transform: "translateZ(24px)" }}
+            >
+              {children}
+            </div>
+          ) : null}
+        </Card>
+      </div>
     </div>
   );
 }
