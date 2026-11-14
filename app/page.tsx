@@ -6,6 +6,7 @@ import { animate } from "animejs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MusicButton } from "@/components/music-button";
 import { AppleMusicIcon, SoundCloudIcon, SpotifyIcon } from "@/lib/icons";
+import { WalkingYash } from "@/components/walking-yash";
 
 const AbyssBackground = dynamic(() => import("@/components/abyss-background").then((m) => m.AbyssBackground), { ssr: false });
 const PortraitCarousel = dynamic(() => import("@/components/portrait-carousel").then((m) => m.PortraitCarousel), {
@@ -16,8 +17,7 @@ const StreamingServicesDrawer = dynamic(() => import("@/components/streaming-ser
   loading: () => <Skeleton aria-hidden className="portrait-skeleton h-[46px] rounded-xl" />,
 });
 
-const HERO_IMAGE =
-  "https://cufummffmtitwhfisrlw.supabase.co/storage/v1/object/public/IMAGES/yashguma-fisidi-joshfisidi-phase1.PNG";
+const HERO_IMAGE = "/yashguma2027jan.png";
 
 function sampleGaussian(scale: number) {
   const u = 1 - Math.random();
@@ -118,6 +118,7 @@ export default function HomePage() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#050d12] pb-[14svh]">
       <AbyssBackground />
+      <WalkingYash />
 
       <div className="relative z-10 flex min-h-screen items-start justify-center px-4 pb-24 pt-8 text-center sm:items-center sm:pb-16 sm:pt-10">
         <section className="w-full max-w-[22rem] space-y-5 pt-2 sm:max-w-[26rem] lg:max-w-[30rem] xl:max-w-[32rem]">
