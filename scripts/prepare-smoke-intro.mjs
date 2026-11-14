@@ -10,7 +10,7 @@ await mkdir(output, { recursive: true });
 const input = await readFile(source);
 const metadata = await sharp(input, { animated: true }).metadata();
 if (!metadata.pages || metadata.pages < 2 || !metadata.delay) throw new Error("Expected an animated GIF");
-const width = 384, height = 576, columns = 4, perSheet = 24;
+const width = 256, height = 384, columns = 9, perSheet = 90;
 const sheets = [];
 for (let start = 0; start < metadata.pages; start += perSheet) {
   const count = Math.min(perSheet, metadata.pages - start);
@@ -19,9 +19,11 @@ for (let start = 0; start < metadata.pages; start += perSheet) {
     const frame = await sharp(input, { page: start + offset, pages: 1 }).resize(width, height).png().toBuffer();
     layers.push({ input: frame, left: offset % columns * width, top: Math.floor(offset / columns) * height });
   }
-  const name = `yashguma-smoke-${sheets.length}.webp`;
-  await sharp({ create: { width: columns * width, height: Math.ceil(count / columns) * height, channels: 4, background: "#00000000" } })
-    .composite(layers).webp({ quality: 90, alphaQuality: 100, effort: 6 }).toFile(new URL(name, output).pathname);
+  const sheet = await sharp({ create: { width: columns * width, height: Math.ceil(count / columns) * height, channels: 4, background: "#00000000" } })
+    .composite(layers).webp({ quality: 74, alphaQuality: 60, effort: 6 }).toBuffer();
+  const hash = createHash("sha256").update(sheet).digest("hex").slice(0, 12);
+  const name = `yashguma-smoke-${hash}.webp`;
+  await writeFile(new URL(name, output), sheet);
   sheets.push(`/intro/${name}`);
 }
 const manifest = {

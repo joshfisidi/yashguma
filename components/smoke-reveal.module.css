@@ -1,10 +1,9 @@
 .root {
   position: relative;
-  --intro-reveal: 0;
 }
 
 .scene {
-  opacity: var(--intro-reveal);
+  opacity: var(--intro-reveal, 0);
   visibility: hidden;
 }
 
@@ -15,30 +14,16 @@
 
 .root[data-intro-phase="complete"] .scene { opacity: 1; }
 
-.stage {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.backdrop {
-  position: absolute;
-  inset: 0;
-  background: #18303b;
-  opacity: calc(1 - var(--intro-reveal));
-}
-
 .canvas {
   position: absolute;
+  z-index: 20;
   display: block;
   pointer-events: none;
 }
 
-.root[data-intro-phase="complete"] .stage { display: none; }
+.root[data-intro-phase="complete"] .canvas { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .scene { opacity: 1; visibility: visible; }
-  .stage { display: none; }
+  .canvas { display: none; }
 }

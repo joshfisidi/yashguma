@@ -1,14 +1,11 @@
 {
   "sourceSha256": "edf083971082f559fe98dd63c8e4b80eaf1df602a0102aca3be2f9eb12f2a58d",
-  "width": 384,
-  "height": 576,
-  "columns": 4,
-  "perSheet": 24,
+  "width": 256,
+  "height": 384,
+  "columns": 9,
+  "perSheet": 90,
   "sheets": [
-    "/intro/yashguma-smoke-0.webp",
-    "/intro/yashguma-smoke-1.webp",
-    "/intro/yashguma-smoke-2.webp",
-    "/intro/yashguma-smoke-3.webp"
+    "/intro/yashguma-smoke-14a897f01305.webp"
   ],
   "delays": [
     60,

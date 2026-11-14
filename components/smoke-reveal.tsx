@@ -19,7 +19,6 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
     if (!root || !scene || !canvas) return;
     const ctx = canvas.getContext("2d");
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const previousOverflow = document.body.style.overflow;
     let disposed = false;
     let finished = false;
     let revealed = false;
@@ -46,9 +45,7 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
       cancelAnimationFrame(raf);
       clearTimeout(watchdog);
       root!.dataset.introPhase = "complete";
-      root!.style.setProperty("--intro-reveal", "1");
       scene!.inert = false;
-      document.body.style.overflow = previousOverflow;
       // Release decoded atlas memory as soon as the one-shot intro ends.
       images.forEach((image) => { image.src = ""; });
       images.length = 0;
@@ -61,14 +58,19 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
     }
     const context = ctx;
     scene.inert = true;
-    document.body.style.overflow = "hidden";
 
     function align() {
       const card = scene!.querySelector<HTMLElement>(".swiper-slide-active [data-portrait-anchor]");
       if (!card) return false;
       const bounds = card.getBoundingClientRect();
       if (!bounds.width || !bounds.height) return false;
-      const geometry = alignIntroFace(bounds, window.innerHeight, window.innerWidth);
+      const origin = root!.getBoundingClientRect();
+      const geometry = alignIntroFace({
+        left: bounds.left - origin.left,
+        top: bounds.top - origin.top,
+        width: bounds.width,
+        height: bounds.height,
+      }, window.innerHeight, root!.clientWidth);
       canvas!.style.left = `${geometry.left}px`;
       canvas!.style.top = `${geometry.top}px`;
       canvas!.style.width = `${geometry.width}px`;
@@ -94,7 +96,7 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
         root!.dataset.introPhase = phase;
         if (phase === "forward") reveal();
       }
-      root!.style.setProperty("--intro-reveal", String(sample.reveal));
+      if (sample.phase === "forward") scene!.style.setProperty("--intro-reveal", String(sample.reveal));
       if (sample.frame !== lastFrame) {
         const sheet = Math.floor(sample.frame / data.perSheet);
         const cell = sample.frame % data.perSheet;
@@ -153,7 +155,6 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
       document.removeEventListener("keydown", escape);
       motion.removeEventListener("change", preference);
       scene.inert = false;
-      document.body.style.overflow = previousOverflow;
       images.forEach((image) => { image.src = ""; });
       images.length = 0;
     };
@@ -162,11 +163,8 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
   return (
     <div ref={rootRef} className={styles.root} data-intro-phase="loading">
       <div ref={sceneRef} className={styles.scene} data-smoke-scene>{children}</div>
-      <div className={styles.stage} data-smoke-stage aria-hidden="true">
-        <div className={styles.backdrop} />
-        <canvas ref={canvasRef} className={styles.canvas} width={data.width} height={data.height} />
-      </div>
-      <noscript><style>{`[data-smoke-scene]{opacity:1!important;visibility:visible!important}[data-smoke-stage]{display:none!important}`}</style></noscript>
+      <canvas ref={canvasRef} className={styles.canvas} data-smoke-overlay aria-hidden="true" width={data.width} height={data.height} />
+      <noscript><style>{`[data-smoke-scene]{opacity:1!important;visibility:visible!important}[data-smoke-overlay]{display:none!important}`}</style></noscript>
     </div>
   );
 }

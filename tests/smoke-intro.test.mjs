@@ -5,15 +5,19 @@ import { createHash } from "node:crypto";
 import { introSample, alignIntroFace } from "../lib/smoke-intro-timeline.ts";
 const data = JSON.parse(readFileSync(new URL("../lib/smoke-intro-data.json", import.meta.url)));
 
-test("manifest matches the supplied GIF and preserves all 83 frame delays", () => {
+test("manifest matches the source GIF and the versioned playback file", () => {
   const source = readFileSync(new URL("../assets/source/yashguma-smoke.gif", import.meta.url));
   assert.equal(createHash("sha256").update(source).digest("hex"), data.sourceSha256);
   assert.equal(data.delays.length, 83);
   assert.equal(data.delays.reduce((a, b) => a + b, 0), 5520);
   assert.equal(data.delays.at(-1), 600);
+  assert.equal(data.sheets.length, 1);
+  const sheet = readFileSync(new URL(`../public${data.sheets[0]}`, import.meta.url));
+  const hash = createHash("sha256").update(sheet).digest("hex").slice(0, 12);
+  assert.equal(data.sheets[0], `/intro/yashguma-smoke-${hash}.webp`);
 });
 
-test("every reverse frame is visited in exact order with the site fully hidden", () => {
+test("every reverse frame is visited in exact order before the page content fades in", () => {
   let elapsed = 0;
   for (let frame = 82; frame >= 0; frame--) {
     const sample = introSample(elapsed + data.delays[frame] / 2, data.delays);

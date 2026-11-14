@@ -7,8 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { MusicButton } from "@/components/music-button";
 import { AppleMusicIcon, SoundCloudIcon, SpotifyIcon } from "@/lib/icons";
 import { SmokeReveal } from "@/components/smoke-reveal";
+import { AbyssBackground } from "@/components/abyss-background";
 
-const AbyssBackground = dynamic(() => import("@/components/abyss-background").then((m) => m.AbyssBackground), { ssr: false });
 const PortraitCarousel = dynamic(() => import("@/components/portrait-carousel").then((m) => m.PortraitCarousel), {
   loading: () => <Skeleton aria-hidden className="portrait-skeleton aspect-[4/5] w-full rounded-[28px]" />,
 });
@@ -119,8 +119,8 @@ export default function HomePage() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#050d12] pb-[14svh]">
+      <AbyssBackground />
       <SmokeReveal onReveal={() => setRevealed(true)}>
-      {revealed && <AbyssBackground />}
 
       <div className="relative z-10 flex min-h-screen items-start justify-center px-4 pb-24 pt-8 text-center sm:items-center sm:pb-16 sm:pt-10">
         <section className="w-full max-w-[22rem] space-y-5 pt-2 sm:max-w-[26rem] lg:max-w-[30rem] xl:max-w-[32rem]">
