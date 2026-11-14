@@ -28,7 +28,7 @@ export function PortraitCarousel({ imageSrc }: { imageSrc: string }) {
       {Array.from({ length: 7 }, (_, index) => (
         <SwiperSlide key={index}>
           {({ isActive }) => (
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[28px] bg-[#0d1e27]">
+            <div data-portrait-anchor className="relative aspect-[4/5] overflow-hidden rounded-[28px] bg-[#0d1e27]">
               {imagePending && <Skeleton aria-hidden className="portrait-skeleton absolute inset-0" />}
               <Image
                 src={imageSrc}
@@ -36,7 +36,8 @@ export function PortraitCarousel({ imageSrc }: { imageSrc: string }) {
                 width={900}
                 height={1125}
                 sizes="(max-width: 639px) 15rem, 19rem"
-                loading="lazy"
+                loading="eager"
+                fetchPriority={index === 0 ? "high" : undefined}
                 draggable={false}
                 unoptimized
                 onLoad={() => setSettledImage(imageSrc)}
