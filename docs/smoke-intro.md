@@ -18,7 +18,7 @@ Hidden tabs pause the clock. Reduced motion and Escape bypass the intro. Failed
 image decoding or a 15-second preparation timeout reveal the usable page. A
 noscript fallback makes the page visible when JavaScript is unavailable.
 
-The browser reads one 1.15 MB WebP sheet from the site. Each frame is 256 × 384
+The browser reads one 1.11 MB WebP sheet from the site. Each frame is 256 × 384
 with alpha. The manifest preserves the original frame order and timing, and
 the sheet filename includes a content hash so updated media can be cached by
 URL. The original GIF is kept outside the public directory for regeneration.

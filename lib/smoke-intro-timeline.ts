@@ -19,8 +19,8 @@ export function introSample(elapsed: number, delays: readonly number[]) {
 export type PortraitBounds = { left: number; top: number; width: number; height: number };
 
 // Visible eye and mouth landmarks on the intact GIF frame and uncropped portrait.
-const introEye = { x: 275, y: 104 };
-const introMouth = { x: 263, y: 132 };
+const introEye = { x: 278, y: 104 };
+const introMouth = { x: 263, y: 134 };
 const portraitEye = { x: 431, y: 410 };
 const portraitMouth = { x: 380, y: 543 };
 

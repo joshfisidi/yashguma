@@ -64,14 +64,14 @@ test("the enlarged overlay aligns both the eye and mouth across portrait crops",
     const portraitScale = card.width / 724;
     const cropTop = card.top + (card.height - 1086 * portraitScale) / 2;
     const scale = result.width / 512;
-    const eyeX = result.left + 275 * scale;
+    const eyeX = result.left + 278 * scale;
     const eyeY = result.top + 104 * scale;
     assert.ok(Math.abs(eyeX - (card.left + 431 * portraitScale)) < 0.01);
     assert.ok(Math.abs(eyeY - (cropTop + 410 * portraitScale)) < 0.01);
-    const mouthX = eyeX + (-12 * Math.cos(result.rotation) - 28 * Math.sin(result.rotation)) * scale;
-    const mouthY = eyeY + (-12 * Math.sin(result.rotation) + 28 * Math.cos(result.rotation)) * scale;
+    const mouthX = eyeX + (-15 * Math.cos(result.rotation) - 30 * Math.sin(result.rotation)) * scale;
+    const mouthY = eyeY + (-15 * Math.sin(result.rotation) + 30 * Math.cos(result.rotation)) * scale;
     assert.ok(Math.abs(mouthX - (card.left + 380 * portraitScale)) < 0.01);
     assert.ok(Math.abs(mouthY - (cropTop + 543 * portraitScale)) < 0.01);
-    assert.ok(result.width > card.width * 3);
+    assert.ok(result.width > card.width * 2.9);
   }
 });
