@@ -54,18 +54,24 @@ test("reverse playback preserves variable frame delays instead of assuming a fra
   assert.equal(introSample(330, delays).phase, "forward");
 });
 
-test("face centers remain aligned through mobile and desktop object-cover crops", () => {
-  for (const [card, viewport, width] of [
-    [{ left: 75, top: 100, width: 240, height: 300 }, 844, 390],
-    [{ left: 568, top: 223, width: 304, height: 380 }, 907, 1440],
-    [{ left: 75, top: 100, width: 240, height: 300 }, 600, 390],
+test("the enlarged overlay aligns both the eye and mouth across portrait crops", () => {
+  for (const card of [
+    { left: 75, top: 100, width: 240, height: 300 },
+    { left: 568, top: 223, width: 304, height: 380 },
+    { left: 40, top: 96, width: 240, height: 300 },
   ]) {
-    const result = alignIntroFace(card, viewport, width);
-    assert.ok(Math.abs(result.left + 260 / 512 * result.width - result.faceX) < 0.01);
-    assert.ok(Math.abs(result.top + 128 / 768 * result.height - result.faceY) < 0.01);
-    assert.ok(result.top >= 12 - 0.01);
-    assert.ok(result.top + result.height <= viewport - 12 + 0.01);
-    assert.ok(result.left >= 12 - 0.01);
-    assert.ok(result.left + result.width <= width - 12 + 0.01);
+    const result = alignIntroFace(card);
+    const portraitScale = card.width / 724;
+    const cropTop = card.top + (card.height - 1086 * portraitScale) / 2;
+    const scale = result.width / 512;
+    const eyeX = result.left + 275 * scale;
+    const eyeY = result.top + 104 * scale;
+    assert.ok(Math.abs(eyeX - (card.left + 431 * portraitScale)) < 0.01);
+    assert.ok(Math.abs(eyeY - (cropTop + 410 * portraitScale)) < 0.01);
+    const mouthX = eyeX + (-12 * Math.cos(result.rotation) - 28 * Math.sin(result.rotation)) * scale;
+    const mouthY = eyeY + (-12 * Math.sin(result.rotation) + 28 * Math.cos(result.rotation)) * scale;
+    assert.ok(Math.abs(mouthX - (card.left + 380 * portraitScale)) < 0.01);
+    assert.ok(Math.abs(mouthY - (cropTop + 543 * portraitScale)) < 0.01);
+    assert.ok(result.width > card.width * 3);
   }
 });

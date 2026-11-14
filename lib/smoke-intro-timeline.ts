@@ -18,15 +18,32 @@ export function introSample(elapsed: number, delays: readonly number[]) {
 
 export type PortraitBounds = { left: number; top: number; width: number; height: number };
 
-// Face centers measured in the supplied GIF and the existing uncropped portrait.
-// Account for the card's object-cover crop rather than aligning bounding-box centers.
-export function alignIntroFace(card: PortraitBounds, viewportHeight: number, viewportWidth: number) {
+// Visible eye and mouth landmarks on the intact GIF frame and uncropped portrait.
+const introEye = { x: 275, y: 104 };
+const introMouth = { x: 263, y: 132 };
+const portraitEye = { x: 431, y: 410 };
+const portraitMouth = { x: 380, y: 543 };
+
+export function alignIntroFace(card: PortraitBounds) {
   const portraitScale = Math.max(card.width / 724, card.height / 1086);
-  const faceX = card.left + (card.width - 724 * portraitScale) / 2 + 374 * portraitScale;
-  const faceY = card.top + (card.height - 1086 * portraitScale) / 2 + 486 * portraitScale;
-  const idealScale = 225 * portraitScale / 72;
-  const scale = Math.max(0.1, Math.min(idealScale,
-    (viewportHeight - 12 - faceY) / (768 - 128), (faceY - 12) / 128,
-    (faceX - 12) / 260, (viewportWidth - 12 - faceX) / (512 - 260)));
-  return { left: faceX - 260 * scale, top: faceY - 128 * scale, width: 512 * scale, height: 768 * scale, faceX, faceY };
+  const cropLeft = card.left + (card.width - 724 * portraitScale) / 2;
+  const cropTop = card.top + (card.height - 1086 * portraitScale) / 2;
+  const targetX = cropLeft + portraitEye.x * portraitScale;
+  const targetY = cropTop + portraitEye.y * portraitScale;
+
+  const introDx = introMouth.x - introEye.x;
+  const introDy = introMouth.y - introEye.y;
+  const portraitDx = portraitMouth.x - portraitEye.x;
+  const portraitDy = portraitMouth.y - portraitEye.y;
+  const scale = Math.hypot(portraitDx, portraitDy) / Math.hypot(introDx, introDy) * portraitScale;
+  const rotation = Math.atan2(portraitDy, portraitDx) - Math.atan2(introDy, introDx);
+
+  return {
+    left: targetX - introEye.x * scale,
+    top: targetY - introEye.y * scale,
+    width: 512 * scale,
+    height: 768 * scale,
+    transformOrigin: `${introEye.x * scale}px ${introEye.y * scale}px`,
+    rotation,
+  };
 }

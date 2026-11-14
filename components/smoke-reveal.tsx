@@ -70,11 +70,13 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
         top: bounds.top - origin.top,
         width: bounds.width,
         height: bounds.height,
-      }, window.innerHeight, root!.clientWidth);
+      });
       canvas!.style.left = `${geometry.left}px`;
       canvas!.style.top = `${geometry.top}px`;
       canvas!.style.width = `${geometry.width}px`;
       canvas!.style.height = `${geometry.height}px`;
+      canvas!.style.transformOrigin = geometry.transformOrigin;
+      canvas!.style.transform = `rotate(${geometry.rotation}rad)`;
       // The source resolution is the useful upper limit, even on a retina screen.
       canvas!.width = data.width;
       canvas!.height = data.height;

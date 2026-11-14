@@ -9,9 +9,9 @@ homepage overlays it while the cards and controls are hidden. At the end of the
 reverse pass, the canvas plays frames 0 → 82 and the content fades in on the same
 clock. The overlay hides and releases its decoded image when playback finishes.
 
-Face positioning uses the current active card's rectangle and its object-cover
-crop. The GIF face center (260, 128) aligns with the portrait face center
-(374, 486). Scale is constrained to keep the full figure within the viewport.
+Face positioning uses the active card's crop and the visible eye and mouth in
+both images. Those points determine scale, rotation, and placement. The figure
+can extend beyond the screen edges to keep its face at the portrait's scale.
 Resize recalculates the placement without restarting playback.
 
 Hidden tabs pause the clock. Reduced motion and Escape bypass the intro. Failed
