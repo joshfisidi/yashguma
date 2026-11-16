@@ -3,25 +3,23 @@ import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
 const [wallpaper, source] = process.argv.slice(2);
-if (!wallpaper || !source) throw new Error("Usage: node scripts/prepare-smoke-intro.mjs <wallpaper.png> <mist.gif>");
+if (!wallpaper || !source) throw new Error("Usage: node scripts/prepare-smoke-intro.mjs <wallpaper.png> <mist.webp>");
 
 const require = createRequire(import.meta.url);
 const sharp = createRequire(require.resolve("next/package.json"))("sharp");
-const video = fileURLToPath(new URL("../public/intro/toronto-rooftop-v2.mp4", import.meta.url));
-const poster = new URL("../public/intro/toronto-rooftop-v2.webp", import.meta.url);
+const video = fileURLToPath(new URL("../public/intro/toronto-rooftop-v3.mp4", import.meta.url));
+const poster = new URL("../public/intro/toronto-rooftop-v3.webp", import.meta.url);
 const { delay } = await sharp(source, { animated: true }).metadata();
-// Trim the supplied GIF's redundant blank lead-in. Frame 5 is still transparent
-// and the following frames introduce mist, so the authored hold can be 300 ms.
-const firstMotionFrame = 5;
-if (!delay || delay.length <= firstMotionFrame) throw new Error("Missing the expected Toronto GIF frames");
-const duration = delay.slice(firstMotionFrame).reduce((sum, value) => sum + value, 0) / 1000;
+if (!delay || delay.length < 2) throw new Error("Expected an animated WebP");
+// Keep the transparent endpoint but omit the long final hold. The edit sets its own holds.
+const duration = (delay.slice(0, -1).reduce((sum, value) => sum + value, 0) + delay[1]) / 1000;
 
 const filters = [
   "[1:v]scale=540:808:flags=lanczos,setsar=1,format=yuva420p",
-  `trim=start_frame=${firstMotionFrame},setpts=(PTS-STARTPTS)*2/${duration},fps=30,tpad=stop_mode=clone:stop=60,trim=end_frame=60,split[forward][reverse_input]`,
+  `setpts=(PTS-STARTPTS)*2/${duration},fps=30,tpad=stop_mode=clone:stop=60,trim=end_frame=60,split[forward][reverse_input]`,
 ].join(",") +
   ";[reverse_input]reverse,framestep=2,setpts=N/(30*TB)[reverse]" +
-  ";[forward][reverse]concat=n=2:v=1:a=0,fps=30,tpad=start_mode=clone:start=9:stop_mode=clone:stop=30[mist]" +
+  ";[reverse][forward]concat=n=2:v=1:a=0,fps=30,tpad=start_mode=clone:start=9:stop_mode=clone:stop=30[mist]" +
   ";[0:v]scale=540:808:flags=lanczos,setsar=1,format=yuv420p[roof]" +
   ";[roof][mist]overlay=shortest=1:format=yuv420[intro]";
 

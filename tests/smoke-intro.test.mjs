@@ -2,13 +2,13 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { introSample } from "../lib/smoke-intro-timeline.ts";
 
-test("the wallpaper holds for 300 ms before two seconds forward and one second reverse", () => {
+test("the wallpaper holds for 300 ms before one second in reverse and two seconds forward", () => {
   assert.equal(introSample(0).phase, "wallpaper");
   assert.equal(introSample(0.299).phase, "wallpaper");
-  assert.equal(introSample(0.3).phase, "forward");
-  assert.equal(introSample(2.299).phase, "forward");
-  assert.equal(introSample(2.3).phase, "reverse");
-  assert.equal(introSample(3.299).phase, "reverse");
+  assert.equal(introSample(0.3).phase, "reverse");
+  assert.equal(introSample(1.299).phase, "reverse");
+  assert.equal(introSample(1.3).phase, "forward");
+  assert.equal(introSample(3.299).phase, "forward");
   assert.deepEqual(introSample(3.3), { phase: "fade", sceneOpacity: 0, introOpacity: 1 });
 });
 

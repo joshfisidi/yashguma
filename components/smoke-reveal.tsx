@@ -4,8 +4,8 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { introSample } from "@/lib/smoke-intro-timeline";
 import styles from "./smoke-reveal.module.css";
 
-const VIDEO = "/intro/toronto-rooftop-v2.mp4";
-const WALLPAPER = "/intro/toronto-rooftop-v2.webp";
+const VIDEO = "/intro/toronto-rooftop-v3.mp4";
+const WALLPAPER = "/intro/toronto-rooftop-v3.webp";
 const INTRO_MEDIA = "(max-width: 639px) and (orientation: portrait) and (prefers-reduced-motion: no-preference)";
 
 export function SmokeReveal({ children, onReveal }: { children: ReactNode; onReveal: () => void }) {
