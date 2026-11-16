@@ -22,3 +22,12 @@ test("the rooftop fades from mist onset through both passes", () => {
   assert.ok(introSample(1.3).mistProgress < forward.mistProgress);
   assert.equal(introSample(3.3).wallpaperOpacity, 0);
 });
+
+test("the mist stays opaque through the reverse pass and dissipates at the end", () => {
+  assert.equal(introSample(0.8).mistOpacity, 1);
+  assert.equal(introSample(2.9).mistOpacity, 1);
+  const midpoint = introSample(3.14);
+  assert.ok(midpoint.mistOpacity > 0 && midpoint.mistOpacity < 0.5);
+  assert.ok(introSample(3.24).mistOpacity < midpoint.mistOpacity);
+  assert.equal(introSample(INTRO_DURATION).mistOpacity, 0);
+});

@@ -87,6 +87,7 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
       wallpaper.style.opacity = String(sample.wallpaperOpacity);
 
       if (sample.phase !== "wallpaper") {
+        if (sample.mistOpacity < 1) canvas.style.opacity = String(sample.mistOpacity);
         const frameIndex = Math.round(sample.mistProgress * (data.frames - 1));
         if (frameIndex !== lastFrame) {
           const x = (frameIndex % data.columns) * data.width;
@@ -106,6 +107,7 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
     scene.inert = true;
     root.dataset.introPhase = "loading";
     wallpaper.style.removeProperty("opacity");
+    canvas.style.removeProperty("opacity");
     introMedia.addEventListener("change", viewportChange);
     document.addEventListener("keydown", escape);
     const timeout = window.setTimeout(finish, 4000);
