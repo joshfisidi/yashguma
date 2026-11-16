@@ -1,171 +1,130 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
-import data from "@/lib/smoke-intro-data.json";
-import { alignIntroFace, introSample } from "@/lib/smoke-intro-timeline";
+import { introSample } from "@/lib/smoke-intro-timeline";
 import styles from "./smoke-reveal.module.css";
+
+const VIDEO = "/intro/toronto-black-mist.mp4";
+const POSTER = "/intro/toronto-black-mist.webp";
 
 export function SmokeReveal({ children, onReveal }: { children: ReactNode; onReveal: () => void }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const revealRef = useRef(onReveal);
   revealRef.current = onReveal;
 
   useEffect(() => {
     const root = rootRef.current;
     const scene = sceneRef.current;
-    const canvas = canvasRef.current;
-    if (!root || !scene || !canvas) return;
-    const ctx = canvas.getContext("2d");
+    const video = videoRef.current;
+    if (!root || !scene || !video) return;
+
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let disposed = false;
     let finished = false;
     let revealed = false;
-    let raf = 0;
-    let elapsed = 0;
-    let lastTime = 0;
-    let lastFrame = -1;
-    let dirtyLayout = true;
-    let playing = false;
+    let frame = 0;
+    let timeout = 0;
     let phase = "loading";
-    const images: HTMLImageElement[] = [];
-    const watchdog = window.setTimeout(finish, 15000);
 
-    function reveal() {
-      if (!revealed) {
-        revealed = true;
-        revealRef.current();
+    const reveal = () => {
+      if (revealed) return;
+      revealed = true;
+      revealRef.current();
+    };
+
+    const stopMedia = () => {
+      window.clearTimeout(timeout);
+      cancelAnimationFrame(frame);
+      video.pause();
+      if (video.hasAttribute("src")) {
+        video.removeAttribute("src");
+        video.load();
       }
-    }
-    function finish() {
-      if (disposed || finished) return;
+    };
+
+    const finish = () => {
+      if (finished) return;
       finished = true;
-      playing = false;
-      cancelAnimationFrame(raf);
-      clearTimeout(watchdog);
-      root!.dataset.introPhase = "complete";
-      scene!.inert = false;
-      // Release decoded atlas memory as soon as the one-shot intro ends.
-      images.forEach((image) => { image.src = ""; });
-      images.length = 0;
-      canvas!.width = canvas!.height = 0;
+      root.dataset.introPhase = "complete";
+      scene.inert = false;
+      stopMedia();
       reveal();
-    }
-    if (!ctx || motion.matches) {
+    };
+
+    if (motion.matches) {
       finish();
-      return () => { disposed = true; clearTimeout(watchdog); };
-    }
-    const context = ctx;
-    scene.inert = true;
-
-    function align() {
-      const card = scene!.querySelector<HTMLElement>(".swiper-slide-active [data-portrait-anchor]");
-      if (!card) return false;
-      const bounds = card.getBoundingClientRect();
-      if (!bounds.width || !bounds.height) return false;
-      const origin = root!.getBoundingClientRect();
-      const geometry = alignIntroFace({
-        left: bounds.left - origin.left,
-        top: bounds.top - origin.top,
-        width: bounds.width,
-        height: bounds.height,
-      });
-      canvas!.style.left = `${geometry.left}px`;
-      canvas!.style.top = `${geometry.top}px`;
-      canvas!.style.width = `${geometry.width}px`;
-      canvas!.style.height = `${geometry.height}px`;
-      canvas!.style.transformOrigin = geometry.transformOrigin;
-      canvas!.style.transform = `rotate(${geometry.rotation}rad)`;
-      // The source resolution is the useful upper limit, even on a retina screen.
-      canvas!.width = data.width;
-      canvas!.height = data.height;
-      dirtyLayout = false;
-      lastFrame = -1;
-      return true;
+      return;
     }
 
-    function tick(now: number) {
-      if (disposed || finished || document.hidden) return;
-      if (dirtyLayout) align();
-      // Preserve the timeline across tab suspension without skipping either pass.
-      if (lastTime) elapsed += Math.min(now - lastTime, 100);
-      lastTime = now;
-      const sample = introSample(elapsed, data.delays);
-      if (sample.phase === "complete") { finish(); return; }
-      if (phase !== sample.phase) {
+    const tick = () => {
+      if (finished) return;
+      const sample = introSample(video.currentTime);
+      if (sample.phase !== phase) {
         phase = sample.phase;
-        root!.dataset.introPhase = phase;
-        if (phase === "forward") reveal();
+        root.dataset.introPhase = phase;
+        if (phase === "fade") reveal();
       }
-      if (sample.phase === "forward") scene!.style.setProperty("--intro-reveal", String(sample.reveal));
-      if (sample.frame !== lastFrame) {
-        const sheet = Math.floor(sample.frame / data.perSheet);
-        const cell = sample.frame % data.perSheet;
-        context.clearRect(0, 0, data.width, data.height);
-        context.drawImage(images[sheet], (cell % data.columns) * data.width, Math.floor(cell / data.columns) * data.height,
-          data.width, data.height, 0, 0, data.width, data.height);
-        canvas!.dataset.frame = String(sample.frame);
-        lastFrame = sample.frame;
+      if (phase === "fade") {
+        scene.style.setProperty("--intro-reveal", String(sample.sceneOpacity));
+        video.style.opacity = String(sample.videoOpacity);
+        if (sample.sceneOpacity === 1) scene.inert = false;
       }
-      raf = requestAnimationFrame(tick);
-    }
+      frame = requestAnimationFrame(tick);
+    };
 
-    function load(src: string) {
-      const image = new Image();
-      images.push(image);
-      image.src = src;
-      return image.decode();
-    }
-    function waitForLayout() {
-      if (disposed || finished) return;
-      if (!align()) { raf = requestAnimationFrame(waitForLayout); return; }
-      clearTimeout(watchdog);
-      playing = true;
-      if (!document.hidden) raf = requestAnimationFrame(tick);
-    }
-    // Decode all atlases before starting, so the turnaround cannot stall on a download.
-    const portrait = new Image();
-    portrait.src = "/yashguma2027jan.png";
-    Promise.all([...data.sheets.map(load), portrait.decode(), document.fonts.ready])
-      .then(waitForLayout).catch(finish);
+    const playing = () => {
+      if (finished) return;
+      window.clearTimeout(timeout);
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(tick);
+    };
 
-    function invalidate() { dirtyLayout = true; }
-    function visibility() {
-      cancelAnimationFrame(raf);
-      lastTime = 0;
-      if (!document.hidden && playing && !finished) raf = requestAnimationFrame(tick);
-    }
-    function preference() { if (motion.matches) finish(); }
-    function escape(event: KeyboardEvent) { if (event.key === "Escape") finish(); }
-    const observer = new ResizeObserver(invalidate);
-    observer.observe(scene);
-    window.addEventListener("resize", invalidate);
-    window.visualViewport?.addEventListener("resize", invalidate);
-    document.addEventListener("visibilitychange", visibility);
-    document.addEventListener("keydown", escape);
+    const waiting = () => {
+      if (finished) return;
+      window.clearTimeout(timeout);
+      cancelAnimationFrame(frame);
+      timeout = window.setTimeout(finish, 4000);
+    };
+
+    const preference = () => { if (motion.matches) finish(); };
+    const escape = (event: KeyboardEvent) => { if (event.key === "Escape") finish(); };
+
+    scene.inert = true;
+    root.dataset.introPhase = "loading";
+    scene.style.removeProperty("--intro-reveal");
+    video.style.removeProperty("opacity");
+    video.addEventListener("playing", playing);
+    video.addEventListener("waiting", waiting);
+    video.addEventListener("ended", finish);
+    video.addEventListener("error", finish);
     motion.addEventListener("change", preference);
+    document.addEventListener("keydown", escape);
+
+    // The server-rendered source can download before hydration. Restore it if
+    // React reruns this effect after cleanup in development.
+    if (!video.hasAttribute("src")) video.src = VIDEO;
+    waiting();
+    void video.play().catch(finish);
 
     return () => {
-      disposed = true;
-      cancelAnimationFrame(raf);
-      clearTimeout(watchdog);
-      observer.disconnect();
-      window.removeEventListener("resize", invalidate);
-      window.visualViewport?.removeEventListener("resize", invalidate);
-      document.removeEventListener("visibilitychange", visibility);
-      document.removeEventListener("keydown", escape);
+      finished = true;
+      video.removeEventListener("playing", playing);
+      video.removeEventListener("waiting", waiting);
+      video.removeEventListener("ended", finish);
+      video.removeEventListener("error", finish);
       motion.removeEventListener("change", preference);
+      document.removeEventListener("keydown", escape);
       scene.inert = false;
-      images.forEach((image) => { image.src = ""; });
-      images.length = 0;
+      stopMedia();
     };
   }, []);
 
   return (
-    <div ref={rootRef} className={styles.root} data-intro-phase="loading">
+    <div ref={rootRef} data-intro-phase="loading">
+      <link rel="preload" as="image" href={POSTER} fetchPriority="high" media="(prefers-reduced-motion: no-preference)" />
       <div ref={sceneRef} className={styles.scene} data-smoke-scene>{children}</div>
-      <canvas ref={canvasRef} className={styles.canvas} data-smoke-overlay aria-hidden="true" width={data.width} height={data.height} />
+      <video ref={videoRef} className={styles.media} data-smoke-overlay src={VIDEO} muted playsInline preload="auto" poster={POSTER} aria-hidden="true" />
       <noscript><style>{`[data-smoke-scene]{opacity:1!important;visibility:visible!important}[data-smoke-overlay]{display:none!important}`}</style></noscript>
     </div>
   );

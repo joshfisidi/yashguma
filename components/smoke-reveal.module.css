@@ -1,29 +1,29 @@
-.root {
-  position: relative;
-}
-
 .scene {
   opacity: var(--intro-reveal, 0);
   visibility: hidden;
 }
 
-.root[data-intro-phase="forward"] .scene,
-.root[data-intro-phase="complete"] .scene {
+[data-intro-phase="fade"] .scene,
+[data-intro-phase="complete"] .scene {
   visibility: visible;
 }
 
-.root[data-intro-phase="complete"] .scene { opacity: 1; }
+[data-intro-phase="complete"] .scene { opacity: 1; }
 
-.canvas {
-  position: absolute;
+.media {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
   z-index: 20;
   display: block;
+  object-fit: contain;
   pointer-events: none;
 }
 
-.root[data-intro-phase="complete"] .canvas { display: none; }
+[data-intro-phase="complete"] .media { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .scene { opacity: 1; visibility: visible; }
-  .canvas { display: none; }
+  .media { display: none; }
 }
