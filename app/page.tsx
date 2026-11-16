@@ -124,7 +124,7 @@ export default function HomePage() {
 
       <div className="relative z-10 flex min-h-screen items-start justify-center px-4 pb-24 pt-8 text-center sm:items-center sm:pb-16 sm:pt-10">
         <section className="w-full max-w-[22rem] space-y-5 pt-2 sm:max-w-[26rem] lg:max-w-[30rem] xl:max-w-[32rem]">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
+          <h1 data-intro-item="title" className="text-4xl font-bold tracking-tight sm:text-6xl">
             <span className="mist-title relative inline-block">
               <span className="relative z-10 mist-title-main">Yash Guma</span>
               <span ref={mistARef} className="mist-title-layer mist-title-layer-a pointer-events-none" aria-hidden>
@@ -137,9 +137,11 @@ export default function HomePage() {
           </h1>
 
           <div className="mx-auto w-full max-w-[15rem] sm:max-w-[19rem] flex flex-col gap-5">
-            <PortraitCarousel imageSrc={HERO_IMAGE} />
+            <div data-intro-item="portrait">
+              <PortraitCarousel imageSrc={HERO_IMAGE} />
+            </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:[&>*]:w-[calc((100%-0.75rem)/2)]">
+            <div data-intro-item="controls" className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:[&>*]:w-[calc((100%-0.75rem)/2)]">
               <MusicButton
                 href="https://spotify.com"
                 icon={<SpotifyIcon className="h-5 w-5" />}

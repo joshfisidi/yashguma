@@ -13,9 +13,8 @@ passes, revealing the regular site background beneath the mist.
 | --- | --- |
 | 0–0.3 s | The still rooftop holds. |
 | 0.3–1.3 s | The figure appears from the mist in reverse. The rooftop starts fading. |
-| 1.3–3.3 s | The figure dissolves into mist as the rooftop finishes fading. |
-| 3.3–3.8 s | The homepage fades in and the haze starts fading out. |
-| 3.8–4.3 s | The homepage is fully visible while the intro finishes fading. |
+| 1.3–3.3 s | The normal pass begins. The title, portrait, and controls fade in from top to bottom over 380 ms while the rooftop continues fading. |
+| 3.3–4.3 s | The intro haze fades over the visible homepage. |
 
 The fades use the same clock as the mist animation. Escape, a change to an
 ineligible viewport, a media error, or a four-second load timeout releases the homepage. The

@@ -43,16 +43,31 @@
   }
 
   .scene {
-    opacity: var(--intro-reveal, 0);
+    position: relative;
+    z-index: 30;
     visibility: hidden;
   }
 
+  [data-intro-phase="forward"] .scene,
   [data-intro-phase="fade"] .scene,
   [data-intro-phase="complete"] .scene {
     visibility: visible;
   }
 
-  [data-intro-phase="complete"] .scene {
-    opacity: 1;
+  :is([data-intro-phase="forward"], [data-intro-phase="fade"]) .scene [data-intro-item] {
+    animation: intro-item-in 240ms ease-out both;
   }
+
+  :is([data-intro-phase="forward"], [data-intro-phase="fade"]) .scene [data-intro-item="portrait"] {
+    animation-delay: 70ms;
+  }
+
+  :is([data-intro-phase="forward"], [data-intro-phase="fade"]) .scene [data-intro-item="controls"] {
+    animation-delay: 140ms;
+  }
+}
+
+@keyframes intro-item-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

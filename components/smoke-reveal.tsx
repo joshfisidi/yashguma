@@ -71,7 +71,13 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
       }
 
       const sample = introSample(seconds);
-      if (root.dataset.introPhase !== sample.phase) root.dataset.introPhase = sample.phase;
+      if (root.dataset.introPhase !== sample.phase) {
+        root.dataset.introPhase = sample.phase;
+        if (sample.phase === "forward" || sample.phase === "fade") {
+          scene.inert = false;
+          reveal();
+        }
+      }
       wallpaper.style.opacity = String(sample.wallpaperOpacity);
 
       if (sample.phase !== "wallpaper") {
@@ -86,10 +92,7 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
       }
 
       if (sample.phase === "fade") {
-        reveal();
-        scene.style.setProperty("--intro-reveal", String(sample.sceneOpacity));
         stage.style.opacity = String(sample.introOpacity);
-        if (sample.sceneOpacity === 1) scene.inert = false;
       }
       animationFrame = requestAnimationFrame(tick);
     };
@@ -99,7 +102,6 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
 
     scene.inert = true;
     root.dataset.introPhase = "loading";
-    scene.style.removeProperty("--intro-reveal");
     stage.style.removeProperty("opacity");
     wallpaper.style.removeProperty("opacity");
     introMedia.addEventListener("change", viewportChange);

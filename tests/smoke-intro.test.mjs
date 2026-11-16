@@ -24,11 +24,8 @@ test("the rooftop fades from mist onset through both passes independently of the
   assert.equal(introSample(3.3).wallpaperOpacity, 0);
 });
 
-test("homepage fades in during the first half of the one-second intro fade", () => {
-  const halfwayThroughReveal = introSample(3.55);
-  assert.ok(Math.abs(halfwayThroughReveal.sceneOpacity - 0.5) < 0.00001);
-  assert.ok(Math.abs(halfwayThroughReveal.introOpacity - 0.75) < 0.00001);
-  assert.equal(introSample(3.8).sceneOpacity, 1);
+test("the haze takes one second to fade after the mist finishes", () => {
+  assert.equal(introSample(3.3).introOpacity, 1);
   assert.equal(introSample(3.8).introOpacity, 0.5);
   assert.equal(introSample(4.3).introOpacity, 0);
 });
