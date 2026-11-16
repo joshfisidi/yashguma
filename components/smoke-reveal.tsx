@@ -4,12 +4,14 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { introSample } from "@/lib/smoke-intro-timeline";
 import styles from "./smoke-reveal.module.css";
 
-const VIDEO = "/intro/toronto-black-mist.mp4";
-const POSTER = "/intro/toronto-black-mist.webp";
+const VIDEO = "/intro/toronto-rooftop-v2.mp4";
+const WALLPAPER = "/intro/toronto-rooftop-v2.webp";
+const INTRO_MEDIA = "(max-width: 639px) and (orientation: portrait) and (prefers-reduced-motion: no-preference)";
 
 export function SmokeReveal({ children, onReveal }: { children: ReactNode; onReveal: () => void }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const revealRef = useRef(onReveal);
   revealRef.current = onReveal;
@@ -17,10 +19,11 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
   useEffect(() => {
     const root = rootRef.current;
     const scene = sceneRef.current;
+    const stage = stageRef.current;
     const video = videoRef.current;
-    if (!root || !scene || !video) return;
+    if (!root || !scene || !stage || !video) return;
 
-    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const introMedia = window.matchMedia(INTRO_MEDIA);
     let finished = false;
     let revealed = false;
     let frame = 0;
@@ -52,7 +55,7 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
       reveal();
     };
 
-    if (motion.matches) {
+    if (!introMedia.matches) {
       finish();
       return;
     }
@@ -67,7 +70,7 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
       }
       if (phase === "fade") {
         scene.style.setProperty("--intro-reveal", String(sample.sceneOpacity));
-        video.style.opacity = String(sample.videoOpacity);
+        stage.style.opacity = String(sample.introOpacity);
         if (sample.sceneOpacity === 1) scene.inert = false;
       }
       frame = requestAnimationFrame(tick);
@@ -87,23 +90,21 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
       timeout = window.setTimeout(finish, 4000);
     };
 
-    const preference = () => { if (motion.matches) finish(); };
+    const viewportChange = () => { if (!introMedia.matches) finish(); };
     const escape = (event: KeyboardEvent) => { if (event.key === "Escape") finish(); };
 
     scene.inert = true;
     root.dataset.introPhase = "loading";
     scene.style.removeProperty("--intro-reveal");
-    video.style.removeProperty("opacity");
+    stage.style.removeProperty("opacity");
     video.addEventListener("playing", playing);
     video.addEventListener("waiting", waiting);
     video.addEventListener("ended", finish);
     video.addEventListener("error", finish);
-    motion.addEventListener("change", preference);
+    introMedia.addEventListener("change", viewportChange);
     document.addEventListener("keydown", escape);
 
-    // The server-rendered source can download before hydration. Restore it if
-    // React reruns this effect after cleanup in development.
-    if (!video.hasAttribute("src")) video.src = VIDEO;
+    video.src = VIDEO;
     waiting();
     void video.play().catch(finish);
 
@@ -113,7 +114,7 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
       video.removeEventListener("waiting", waiting);
       video.removeEventListener("ended", finish);
       video.removeEventListener("error", finish);
-      motion.removeEventListener("change", preference);
+      introMedia.removeEventListener("change", viewportChange);
       document.removeEventListener("keydown", escape);
       scene.inert = false;
       stopMedia();
@@ -122,9 +123,17 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
 
   return (
     <div ref={rootRef} data-intro-phase="loading">
-      <link rel="preload" as="image" href={POSTER} fetchPriority="high" media="(prefers-reduced-motion: no-preference)" />
+      <link rel="preload" as="image" href={WALLPAPER} fetchPriority="high" media={INTRO_MEDIA} />
       <div ref={sceneRef} className={styles.scene} data-smoke-scene>{children}</div>
-      <video ref={videoRef} className={styles.media} data-smoke-overlay src={VIDEO} muted playsInline preload="auto" poster={POSTER} aria-hidden="true" />
+      <div ref={stageRef} className={styles.stage} data-smoke-overlay aria-hidden="true">
+        <picture>
+          <source srcSet={WALLPAPER} media={INTRO_MEDIA} />
+          {/* The responsive source is the only wallpaper request. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={styles.wallpaper} alt="" fetchPriority="high" />
+        </picture>
+        <video ref={videoRef} className={styles.media} muted playsInline preload="auto" />
+      </div>
       <noscript><style>{`[data-smoke-scene]{opacity:1!important;visibility:visible!important}[data-smoke-overlay]{display:none!important}`}</style></noscript>
     </div>
   );
