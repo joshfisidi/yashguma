@@ -11,6 +11,8 @@
     display: block;
     overflow: hidden;
     pointer-events: none;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 9%, black 87%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, black 9%, black 87%, transparent);
   }
 
   .wallpaper,
@@ -43,20 +45,4 @@
     visibility: visible;
   }
 
-  [data-intro-phase="forward"] .scene [data-intro-item] {
-    animation: intro-item-in 240ms ease-out both;
-  }
-
-  [data-intro-phase="forward"] .scene [data-intro-item="portrait"] {
-    animation-delay: 70ms;
-  }
-
-  [data-intro-phase="forward"] .scene [data-intro-item="controls"] {
-    animation-delay: 140ms;
-  }
-}
-
-@keyframes intro-item-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }

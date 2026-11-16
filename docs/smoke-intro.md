@@ -6,14 +6,14 @@ immediately and skip the intro media requests.
 
 On eligible screens, the supplied rooftop still is preloaded as WebP. A canvas
 draws the animated mist from a transparent WebP sheet. The rooftop and mist share
-the same full-viewport crop. The rooftop fades independently over both animation
-passes, revealing the regular site background beneath the mist.
+the same full-viewport crop and fade softly at the top and bottom. The rooftop
+fades independently over both passes to reveal the site background.
 
 | Playback time | What happens |
 | --- | --- |
 | 0–0.3 s | The still rooftop holds. |
 | 0.3–1.3 s | The figure appears from the mist in reverse. The rooftop starts fading. |
-| 1.3–3.3 s | The normal pass begins. The title, portrait, and controls fade in from top to bottom over 380 ms while the rooftop continues fading. |
+| 1.3–3.3 s | Forward playback begins. Motion fades the title, portrait, and controls in from top to bottom over 420 ms while the rooftop continues fading. |
 | 3.3 s | The mist finishes and the intro layer is removed. |
 
 The fades use the same clock as the mist animation. Escape, a change to an

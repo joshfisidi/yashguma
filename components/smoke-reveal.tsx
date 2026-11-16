@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
+import { stagger, useAnimate } from "motion/react";
 import data from "@/lib/smoke-intro-data.json";
 import { INTRO_DURATION, introSample } from "@/lib/smoke-intro-timeline";
 import styles from "./smoke-reveal.module.css";
@@ -9,7 +10,7 @@ const INTRO_MEDIA = "(max-width: 639px) and (orientation: portrait) and (prefers
 
 export function SmokeReveal({ children, onReveal }: { children: ReactNode; onReveal: () => void }) {
   const rootRef = useRef<HTMLDivElement>(null);
-  const sceneRef = useRef<HTMLDivElement>(null);
+  const [sceneRef, animateItems] = useAnimate<HTMLDivElement>();
   const wallpaperRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const revealRef = useRef(onReveal);
@@ -36,6 +37,7 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
     let animationFrame = 0;
     let lastFrame = -1;
     let startedAt = 0;
+    let entrance: ReturnType<typeof animateItems> | undefined;
 
     const reveal = () => {
       if (revealed) return;
@@ -57,6 +59,7 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
       if (finished) return;
       finished = true;
       root.dataset.introPhase = "complete";
+      entrance?.complete();
       stop();
       reveal();
     };
@@ -72,6 +75,11 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
       if (root.dataset.introPhase !== sample.phase) {
         root.dataset.introPhase = sample.phase;
         if (sample.phase === "forward") {
+          entrance = animateItems("[data-intro-item]", { opacity: [0, 1], y: [6, 0] }, {
+            duration: 0.28,
+            delay: stagger(0.07),
+            ease: [0.22, 1, 0.36, 1],
+          });
           scene.inert = false;
           reveal();
         }
@@ -116,7 +124,7 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
       finished = true;
       stop();
     };
-  }, []);
+  }, [animateItems, sceneRef]);
 
   return (
     <div ref={rootRef} data-intro-phase="loading">
