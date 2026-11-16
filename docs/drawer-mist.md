@@ -1,12 +1,12 @@
 # Other drawer mist animation
 
 Opening the Other drawer starts the transparent animation above its top edge.
-The homepage loads immediately, and the sheet is requested only when needed.
-Reduced motion skips playback. Closing the drawer stops playback; reopening starts it over.
+The homepage content fades as the drawer opens, and the figure rises with the drawer.
+The frame sheet loads on demand. Reduced motion shows a static figure.
 
 The source starts with Yash Guma fully visible. The canvas reads the frame sheet
-backward for two seconds to bring him in, then forward for one second to dissolve
-him, fading to transparent over the final 320 ms.
+backward for two seconds to bring him in and holds the last frame while the drawer
+is open. Paper's Liquid Metal shader uses that frame as its mask for a teal sheen.
 
 Regenerate the optimized sheet from the original file using FFmpeg with animated
 WebP decoding:

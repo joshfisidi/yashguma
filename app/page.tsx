@@ -1,8 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { animate } from "animejs";
+import { motion, useReducedMotion } from "motion/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MusicButton } from "@/components/music-button";
 import { AppleMusicIcon, SoundCloudIcon, SpotifyIcon } from "@/lib/icons";
@@ -25,6 +26,8 @@ function sampleGaussian(scale: number) {
 }
 
 export default function HomePage() {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const reduceMotion = useReducedMotion();
   const mistARef = useRef<HTMLSpanElement>(null);
   const mistBRef = useRef<HTMLSpanElement>(null);
 
@@ -118,7 +121,13 @@ export default function HomePage() {
     <main className="relative min-h-screen overflow-hidden bg-[#050d12] pb-[14svh]">
       <AbyssBackground />
       <div className="relative z-10 flex min-h-screen items-start justify-center px-4 pb-24 pt-8 text-center sm:items-center sm:pb-16 sm:pt-10">
-        <section className="w-full max-w-[22rem] space-y-5 pt-2 sm:max-w-[26rem] lg:max-w-[30rem] xl:max-w-[32rem]">
+        <motion.section
+          data-slot="home-content"
+          initial={false}
+          animate={{ opacity: drawerOpen ? 0 : 1 }}
+          transition={{ type: "tween", duration: reduceMotion ? 0 : 0.26, ease: "easeOut" }}
+          className="w-full max-w-[22rem] space-y-5 pt-2 sm:max-w-[26rem] lg:max-w-[30rem] xl:max-w-[32rem]"
+        >
           <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
             <span className="mist-title relative inline-block">
               <span className="relative z-10 mist-title-main">Yash Guma</span>
@@ -153,10 +162,10 @@ export default function HomePage() {
                 label="SoundCloud"
               />
 
-              <StreamingServicesDrawer />
+              <StreamingServicesDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
             </div>
           </div>
-        </section>
+        </motion.section>
       </div>
 
       <style jsx>{`
