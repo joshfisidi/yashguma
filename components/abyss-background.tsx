@@ -164,5 +164,11 @@ export function AbyssBackground() {
     };
   }, []);
 
-  return <canvas ref={canvasRef} aria-hidden="true" className="home-fade pointer-events-none fixed inset-0 h-full w-full" />;
+  return (
+    <canvas
+      ref={canvasRef}
+      aria-hidden="true"
+      className="home-fade pointer-events-none fixed inset-0 h-full w-full [mask-image:linear-gradient(to_bottom,transparent,black_24px)]"
+    />
+  );
 }
