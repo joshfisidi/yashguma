@@ -28,18 +28,8 @@
   }
 
   [data-intro-phase="forward"] .media,
-  [data-intro-phase="reverse"] .media,
-  [data-intro-phase="fade"] .media {
+  [data-intro-phase="reverse"] .media {
     visibility: visible;
-  }
-
-  .stage::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse at 52% 38%, rgb(140 173 190 / 14%), transparent 72%),
-      linear-gradient(165deg, rgb(97 134 155 / 9%), rgb(13 32 46 / 12%));
   }
 
   .scene {
@@ -49,20 +39,19 @@
   }
 
   [data-intro-phase="forward"] .scene,
-  [data-intro-phase="fade"] .scene,
   [data-intro-phase="complete"] .scene {
     visibility: visible;
   }
 
-  :is([data-intro-phase="forward"], [data-intro-phase="fade"]) .scene [data-intro-item] {
+  [data-intro-phase="forward"] .scene [data-intro-item] {
     animation: intro-item-in 240ms ease-out both;
   }
 
-  :is([data-intro-phase="forward"], [data-intro-phase="fade"]) .scene [data-intro-item="portrait"] {
+  [data-intro-phase="forward"] .scene [data-intro-item="portrait"] {
     animation-delay: 70ms;
   }
 
-  :is([data-intro-phase="forward"], [data-intro-phase="fade"]) .scene [data-intro-item="controls"] {
+  [data-intro-phase="forward"] .scene [data-intro-item="controls"] {
     animation-delay: 140ms;
   }
 }

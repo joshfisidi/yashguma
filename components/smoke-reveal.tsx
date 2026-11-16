@@ -10,7 +10,6 @@ const INTRO_MEDIA = "(max-width: 639px) and (orientation: portrait) and (prefers
 export function SmokeReveal({ children, onReveal }: { children: ReactNode; onReveal: () => void }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
-  const stageRef = useRef<HTMLDivElement>(null);
   const wallpaperRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const revealRef = useRef(onReveal);
@@ -19,10 +18,9 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
   useEffect(() => {
     const root = rootRef.current;
     const scene = sceneRef.current;
-    const stage = stageRef.current;
     const wallpaper = wallpaperRef.current;
     const canvas = canvasRef.current;
-    if (!root || !scene || !stage || !wallpaper || !canvas) return;
+    if (!root || !scene || !wallpaper || !canvas) return;
 
     const introMedia = window.matchMedia(INTRO_MEDIA);
     const context = introMedia.matches ? canvas.getContext("2d") : null;
@@ -73,7 +71,7 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
       const sample = introSample(seconds);
       if (root.dataset.introPhase !== sample.phase) {
         root.dataset.introPhase = sample.phase;
-        if (sample.phase === "forward" || sample.phase === "fade") {
+        if (sample.phase === "forward") {
           scene.inert = false;
           reveal();
         }
@@ -91,9 +89,6 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
         }
       }
 
-      if (sample.phase === "fade") {
-        stage.style.opacity = String(sample.introOpacity);
-      }
       animationFrame = requestAnimationFrame(tick);
     };
 
@@ -102,7 +97,6 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
 
     scene.inert = true;
     root.dataset.introPhase = "loading";
-    stage.style.removeProperty("opacity");
     wallpaper.style.removeProperty("opacity");
     introMedia.addEventListener("change", viewportChange);
     document.addEventListener("keydown", escape);
@@ -128,7 +122,7 @@ export function SmokeReveal({ children, onReveal }: { children: ReactNode; onRev
     <div ref={rootRef} data-intro-phase="loading">
       <link rel="preload" as="image" href={data.posterPath} fetchPriority="high" media={INTRO_MEDIA} />
       <div ref={sceneRef} className={styles.scene} data-smoke-scene>{children}</div>
-      <div ref={stageRef} className={styles.stage} data-smoke-overlay aria-hidden="true">
+      <div className={styles.stage} data-smoke-overlay aria-hidden="true">
         <picture>
           <source srcSet={data.posterPath} media={INTRO_MEDIA} />
           {/* The responsive source is the only wallpaper request. */}
