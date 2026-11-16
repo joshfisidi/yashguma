@@ -1,24 +1,23 @@
 import { execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
-import { writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
-const [wallpaper, source] = process.argv.slice(2);
-if (!wallpaper || !source) throw new Error("Usage: node scripts/prepare-smoke-intro.mjs <wallpaper.png> <mist.webp>");
+const [source] = process.argv.slice(2);
+if (!source) throw new Error("Usage: node scripts/prepare-drawer-mist.mjs <mist.webp>");
 
 const require = createRequire(import.meta.url);
 const sharp = createRequire(require.resolve("next/package.json"))("sharp");
 const { delay } = await sharp(source, { animated: true }).metadata();
 if (!delay || delay.length < 2) throw new Error("Expected an animated WebP");
 
-const width = 270;
-const height = 404;
+const width = 162;
+const height = 242;
 const columns = 8;
 const frames = 60;
 const raw = { width, height, channels: 4 };
 const bytesPerFrame = width * height * raw.channels;
-const atlasPath = "/intro/toronto-mist-v4.webp";
-const posterPath = "/intro/toronto-wallpaper-v4.webp";
+const atlasPath = "/drawer/yashguma-mist.webp";
 
 // Keep the transparent endpoint and shorten the source's final hold.
 const duration = (delay.slice(0, -1).reduce((sum, value) => sum + value, 0) + delay[1]) / 1000;
@@ -36,6 +35,7 @@ const layers = Array.from({ length: frames }, (_, index) => ({
   top: Math.floor(index / columns) * height,
 }));
 
+await mkdir(new URL("../public/drawer/", import.meta.url), { recursive: true });
 await sharp({
   create: { width: width * columns, height: height * Math.ceil(frames / columns), channels: 4, background: "#00000000" },
 })
@@ -43,8 +43,5 @@ await sharp({
   .webp({ quality: 74, alphaQuality: 60, effort: 6 })
   .toFile(fileURLToPath(new URL(`../public${atlasPath}`, import.meta.url)));
 
-await sharp(wallpaper).resize(width * 2, height * 2).webp({ quality: 82 })
-  .toFile(fileURLToPath(new URL(`../public${posterPath}`, import.meta.url)));
-
-await writeFile(new URL("../lib/smoke-intro-data.json", import.meta.url),
-  JSON.stringify({ atlasPath, posterPath, width, height, columns, frames }, null, 2) + "\n");
+await writeFile(new URL("../lib/drawer-mist-data.json", import.meta.url),
+  JSON.stringify({ atlasPath, width, height, columns, frames }, null, 2) + "\n");

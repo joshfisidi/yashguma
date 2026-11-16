@@ -1,12 +1,11 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { animate } from "animejs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MusicButton } from "@/components/music-button";
 import { AppleMusicIcon, SoundCloudIcon, SpotifyIcon } from "@/lib/icons";
-import { SmokeReveal } from "@/components/smoke-reveal";
 import { AbyssBackground } from "@/components/abyss-background";
 
 const PortraitCarousel = dynamic(() => import("@/components/portrait-carousel").then((m) => m.PortraitCarousel), {
@@ -26,12 +25,10 @@ function sampleGaussian(scale: number) {
 }
 
 export default function HomePage() {
-  const [revealed, setRevealed] = useState(false);
   const mistARef = useRef<HTMLSpanElement>(null);
   const mistBRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    if (!revealed) return;
     const layers = [mistARef.current, mistBRef.current].filter(Boolean) as HTMLSpanElement[];
 
     if (!layers.length || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -115,16 +112,14 @@ export default function HomePage() {
       activeAnimations.forEach((animation) => animation.pause());
       activeAnimations.clear();
     };
-  }, [revealed]);
+  }, []);
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#050d12] pb-[14svh]">
       <AbyssBackground />
-      <SmokeReveal onReveal={() => setRevealed(true)}>
-
       <div className="relative z-10 flex min-h-screen items-start justify-center px-4 pb-24 pt-8 text-center sm:items-center sm:pb-16 sm:pt-10">
         <section className="w-full max-w-[22rem] space-y-5 pt-2 sm:max-w-[26rem] lg:max-w-[30rem] xl:max-w-[32rem]">
-          <h1 data-intro-item="title" className="text-4xl font-bold tracking-tight sm:text-6xl">
+          <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
             <span className="mist-title relative inline-block">
               <span className="relative z-10 mist-title-main">Yash Guma</span>
               <span ref={mistARef} className="mist-title-layer mist-title-layer-a pointer-events-none" aria-hidden>
@@ -137,11 +132,9 @@ export default function HomePage() {
           </h1>
 
           <div className="mx-auto w-full max-w-[15rem] sm:max-w-[19rem] flex flex-col gap-5">
-            <div data-intro-item="portrait">
-              <PortraitCarousel imageSrc={HERO_IMAGE} />
-            </div>
+            <PortraitCarousel imageSrc={HERO_IMAGE} />
 
-            <div data-intro-item="controls" className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:[&>*]:w-[calc((100%-0.75rem)/2)]">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:[&>*]:w-[calc((100%-0.75rem)/2)]">
               <MusicButton
                 href="https://spotify.com"
                 icon={<SpotifyIcon className="h-5 w-5" />}
@@ -165,7 +158,6 @@ export default function HomePage() {
           </div>
         </section>
       </div>
-      </SmokeReveal>
 
       <style jsx>{`
         .mist-title {

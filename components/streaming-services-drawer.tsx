@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, useMotionValue, useReducedMotion, useSpring } from "motion/react";
 import LiquidGlass from "liquid-glass-react";
+import { DrawerMist } from "@/components/drawer-mist";
 import { MusicButton } from "@/components/music-button";
 import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import {
@@ -80,9 +81,10 @@ export function StreamingServicesDrawer() {
       <DrawerContent
         aria-describedby={undefined}
         overlayClassName="bg-black/25"
-        className="max-h-[85svh] overflow-hidden border-[#a1cbd5]/30 bg-transparent text-[#d3e8ed] shadow-[0_-16px_64px_#0007,inset_0_1px_0_#c2f0ff33] data-[vaul-drawer-direction=bottom]:rounded-t-[2rem] [&_[data-vaul-handle]]:z-10 [&_[data-vaul-handle]]:h-1.5 [&_[data-vaul-handle]]:w-14"
+        className="border-[#a1cbd5]/30 bg-transparent text-[#d3e8ed] shadow-[0_-16px_64px_#0007,inset_0_1px_0_#c2f0ff33] data-[vaul-drawer-direction=bottom]:max-h-[min(85svh,calc(100svh_-_min(9rem,20svh)_-_0.75rem))] data-[vaul-drawer-direction=bottom]:rounded-t-[2rem] [&_[data-vaul-handle]]:z-10 [&_[data-vaul-handle]]:h-1.5 [&_[data-vaul-handle]]:w-14"
       >
-        <div aria-hidden="true" data-slot="drawer-glass" className="pointer-events-none absolute inset-0">
+        {open && !reduceMotion && <DrawerMist />}
+        <div aria-hidden="true" data-slot="drawer-glass" className="pointer-events-none absolute inset-0 overflow-hidden rounded-t-[inherit]">
           <LiquidGlass
             className="h-full w-full [&>.glass]:h-full [&>.glass]:w-full"
             style={{ position: "absolute", top: "50%", left: "50%" }}
@@ -99,12 +101,11 @@ export function StreamingServicesDrawer() {
             <span />
           </LiquidGlass>
           <div className="absolute inset-0 bg-[#0b202b]/65" />
+          <motion.div
+            className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,#a9d8e23d,transparent_60%),linear-gradient(155deg,#7fa9b41c,transparent_48%,#5b9ba21f)]"
+            style={{ opacity: sheenOpacity }}
+          />
         </div>
-        <motion.div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,#a9d8e23d,transparent_60%),linear-gradient(155deg,#7fa9b41c,transparent_48%,#5b9ba21f)]"
-          style={{ opacity: sheenOpacity }}
-        />
         <DrawerTitle className="sr-only">More streaming services and social links</DrawerTitle>
         <div className="relative min-h-0 overflow-y-auto overscroll-contain">
           <motion.div
