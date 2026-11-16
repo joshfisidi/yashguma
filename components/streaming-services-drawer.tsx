@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { motion, useMotionValue, useReducedMotion, useSpring } from "motion/react";
 import LiquidGlass from "liquid-glass-react";
 import { DrawerMist } from "@/components/drawer-mist";
@@ -38,8 +38,14 @@ const SOCIAL_SERVICES = [
 
 const stationaryGlass = { x: 0, y: 0 };
 
-export function StreamingServicesDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+export function StreamingServicesDrawer({ open, onOpenChange, mistVisible, onMistVisibilityChange }: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  mistVisible: boolean;
+  onMistVisibilityChange: (visible: boolean) => void;
+}) {
   const reduceMotion = useReducedMotion();
+  const drawerRef = useRef<HTMLDivElement>(null);
   const sheen = useMotionValue(1);
   const sheenOpacity = useSpring(sheen, { stiffness: 240, damping: 30 });
 
@@ -78,11 +84,11 @@ export function StreamingServicesDrawer({ open, onOpenChange }: { open: boolean;
         </button>
       </DrawerTrigger>
       <DrawerContent
+        ref={drawerRef}
         aria-describedby={undefined}
         overlayClassName="bg-black/25"
-        className="border-[#a1cbd5]/30 bg-transparent text-[#d3e8ed] shadow-[0_-16px_64px_#0007,inset_0_1px_0_#c2f0ff33] [--drawer-figure-height:min(10.5rem,22svh)] data-[vaul-drawer-direction=bottom]:max-h-[min(85svh,calc(100svh_-_var(--drawer-figure-height)_-_1.5rem))] data-[vaul-drawer-direction=bottom]:rounded-t-[2rem] [&_[data-vaul-handle]]:z-10 [&_[data-vaul-handle]]:h-1.5 [&_[data-vaul-handle]]:w-14"
+        className="border-[#a1cbd5]/30 bg-transparent text-[#d3e8ed] shadow-[0_-16px_64px_#0007,inset_0_1px_0_#c2f0ff33] [--drawer-headroom:6rem] sm:[--drawer-headroom:1.5rem] [--drawer-figure-height:min(10.5rem,22svh)] data-[vaul-drawer-direction=bottom]:max-h-[min(85svh,calc(100svh_-_var(--drawer-figure-height)_-_var(--drawer-headroom)))] data-[vaul-drawer-direction=bottom]:rounded-t-[2rem] [&_[data-vaul-handle]]:z-10 [&_[data-vaul-handle]]:h-1.5 [&_[data-vaul-handle]]:w-14"
       >
-        <DrawerMist open={open} reduceMotion={!!reduceMotion} />
         <div aria-hidden="true" data-slot="drawer-glass" className="pointer-events-none absolute inset-0 overflow-hidden rounded-t-[inherit]">
           <LiquidGlass
             className="h-full w-full [&>.glass]:h-full [&>.glass]:w-full"
@@ -139,6 +145,13 @@ export function StreamingServicesDrawer({ open, onOpenChange }: { open: boolean;
           </motion.div>
         </div>
       </DrawerContent>
+      <DrawerMist
+        drawerRef={drawerRef}
+        open={open}
+        reduceMotion={!!reduceMotion}
+        visible={mistVisible}
+        onVisibilityChange={onMistVisibilityChange}
+      />
     </Drawer>
   );
 }

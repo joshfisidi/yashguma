@@ -27,6 +27,7 @@ function sampleGaussian(scale: number) {
 
 export default function HomePage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [mistVisible, setMistVisible] = useState(false);
   const reduceMotion = useReducedMotion();
   const mistARef = useRef<HTMLSpanElement>(null);
   const mistBRef = useRef<HTMLSpanElement>(null);
@@ -121,13 +122,7 @@ export default function HomePage() {
     <main className="relative min-h-screen overflow-hidden bg-[#050d12] pb-[14svh]">
       <AbyssBackground />
       <div className="relative z-10 flex min-h-screen items-start justify-center px-4 pb-24 pt-8 text-center sm:items-center sm:pb-16 sm:pt-10">
-        <motion.section
-          data-slot="home-content"
-          initial={false}
-          animate={{ opacity: drawerOpen ? 0 : 1 }}
-          transition={{ type: "tween", duration: reduceMotion ? 0 : 0.26, ease: "easeOut" }}
-          className="w-full max-w-[22rem] space-y-5 pt-2 sm:max-w-[26rem] lg:max-w-[30rem] xl:max-w-[32rem]"
-        >
+        <section className="w-full max-w-[22rem] space-y-5 pt-2 sm:max-w-[26rem] lg:max-w-[30rem] xl:max-w-[32rem]">
           <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
             <span className="mist-title relative inline-block">
               <span className="relative z-10 mist-title-main">Yash Guma</span>
@@ -140,7 +135,13 @@ export default function HomePage() {
             </span>
           </h1>
 
-          <div className="mx-auto w-full max-w-[15rem] sm:max-w-[19rem] flex flex-col gap-5">
+          <motion.div
+            data-slot="home-content"
+            initial={false}
+            animate={{ opacity: drawerOpen || mistVisible ? 0 : 1 }}
+            transition={{ type: "tween", duration: reduceMotion ? 0 : 0.26, ease: "easeOut" }}
+            className="mx-auto w-full max-w-[15rem] sm:max-w-[19rem] flex flex-col gap-5"
+          >
             <PortraitCarousel imageSrc={HERO_IMAGE} />
 
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:[&>*]:w-[calc((100%-0.75rem)/2)]">
@@ -162,10 +163,15 @@ export default function HomePage() {
                 label="SoundCloud"
               />
 
-              <StreamingServicesDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
+              <StreamingServicesDrawer
+                open={drawerOpen}
+                onOpenChange={setDrawerOpen}
+                mistVisible={mistVisible}
+                onMistVisibilityChange={setMistVisible}
+              />
             </div>
-          </div>
-        </motion.section>
+          </motion.div>
+        </section>
       </div>
 
       <style jsx>{`
