@@ -45,8 +45,6 @@ export default function HomePage() {
     const launchBrownianWalk = (layer: HTMLSpanElement, config: {
       xScale: number;
       yScale: number;
-      blurMin: number;
-      blurMax: number;
       minDuration: number;
       maxDuration: number;
       minOpacity: number;
@@ -61,14 +59,12 @@ export default function HomePage() {
 
         const nextX = clamp(x + sampleGaussian(config.xScale), -config.driftLimit, config.driftLimit);
         const nextY = clamp(y + sampleGaussian(config.yScale), -config.driftLimit, config.driftLimit);
-        const blur = clamp(2 + sampleGaussian(1.2), config.blurMin, config.blurMax);
         const opacity = clamp(config.minOpacity + Math.abs(nextX + nextY) / 240, config.minOpacity, config.maxOpacity);
 
         const anim = animate(layer, {
           x: [x, nextX],
           y: [y, nextY],
           opacity: [0.2, opacity],
-          filter: [`blur(1px)`, `blur(${blur.toFixed(2)}px)`],
           duration: Math.round(config.minDuration + Math.random() * (config.maxDuration - config.minDuration)),
           easing: "inOutSine",
           autoplay: true,
@@ -90,8 +86,6 @@ export default function HomePage() {
     launchBrownianWalk(mistARef.current as HTMLSpanElement, {
       xScale: 5,
       yScale: 4,
-      blurMin: 1.8,
-      blurMax: 2.8,
       minDuration: 1400,
       maxDuration: 2500,
       minOpacity: 0.18,
@@ -102,8 +96,6 @@ export default function HomePage() {
     launchBrownianWalk(mistBRef.current as HTMLSpanElement, {
       xScale: 7,
       yScale: 5,
-      blurMin: 2.6,
-      blurMax: 4.2,
       minDuration: 1700,
       maxDuration: 3300,
       minOpacity: 0.12,
@@ -124,7 +116,7 @@ export default function HomePage() {
       <div className="relative z-10 flex min-h-screen items-start justify-center px-4 pb-24 pt-8 text-center sm:items-center sm:pb-16 sm:pt-10">
         <section className="w-full max-w-[22rem] space-y-5 pt-2 sm:max-w-[26rem] lg:max-w-[30rem] xl:max-w-[32rem]">
           <h1 id="artist-name" className="text-4xl font-bold tracking-tight sm:text-6xl">
-            <span className="mist-title relative inline-block">
+            <span className="relative inline-block">
               <span className="relative z-10 mist-title-main">Yash Guma</span>
               <span ref={mistARef} className="mist-title-layer mist-title-layer-a pointer-events-none" aria-hidden>
                 Yash Guma
@@ -175,13 +167,6 @@ export default function HomePage() {
       </div>
 
       <style jsx>{`
-        .mist-title {
-          text-shadow:
-            0 0 10px rgba(53, 102, 121, 0.36),
-            0 0 22px rgba(25, 72, 85, 0.35),
-            0 8px 24px rgba(0, 0, 0, 0.35);
-        }
-
         .mist-title-main {
           color: #9dbcc7;
           text-shadow:
@@ -195,33 +180,16 @@ export default function HomePage() {
           inset: 0;
           display: inline-block;
           color: transparent;
+          opacity: 0;
           white-space: nowrap;
-          mix-blend-mode: multiply;
-          -webkit-text-stroke: 0;
         }
 
         .mist-title-layer-a {
-          background-image: radial-gradient(
-            circle at 40% 55%,
-            rgba(0, 0, 0, 0.48) 0%,
-            rgba(0, 0, 0, 0.12) 32%,
-            transparent 58%
-          );
-          background-size: 250% 250%;
-          -webkit-background-clip: text;
-          background-clip: text;
+          text-shadow: 0 0 12px rgba(53, 102, 121, 0.28);
         }
 
         .mist-title-layer-b {
-          background-image: radial-gradient(
-            circle at 65% 45%,
-            rgba(0, 0, 0, 0.32) 0%,
-            rgba(0, 0, 0, 0.05) 38%,
-            transparent 60%
-          );
-          background-size: 240% 240%;
-          -webkit-background-clip: text;
-          background-clip: text;
+          text-shadow: 0 0 24px rgba(25, 72, 85, 0.35);
         }
       `}</style>
     </main>
