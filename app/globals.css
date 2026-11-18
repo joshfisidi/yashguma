@@ -4,6 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --drawer-figure-height: min(44svh, max(22svh, calc(100vw - 13.5rem)), 120vw);
   background-color: #050d12;
   --background: oklch(0.08 0 0);
   --foreground: oklch(0.95 0 0);

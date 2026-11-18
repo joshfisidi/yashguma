@@ -6,7 +6,16 @@ import { motion, useMotionValue } from "motion/react";
 import data from "@/lib/drawer-mist-data.json";
 import { drawerMistProgress } from "@/lib/drawer-mist-timeline";
 
-const { width, height, columns, frames, atlasPath } = data;
+const { variants } = data;
+type Variant = (typeof variants)[number];
+type Atlas = { image: HTMLImageElement; variant: Variant; formed: HTMLImageElement | null };
+
+async function loadImage(path: string) {
+  const image = new Image();
+  image.src = path;
+  await image.decode();
+  return image;
+}
 
 export function DrawerMist({ drawerRef, open, reduceMotion, visible, onVisibilityChange }: {
   drawerRef: RefObject<HTMLDivElement | null>;
@@ -16,18 +25,30 @@ export function DrawerMist({ drawerRef, open, reduceMotion, visible, onVisibilit
   onVisibilityChange: (visible: boolean) => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const figureRef = useRef<HTMLDivElement>(null);
   const progress = useRef(1);
-  const [atlas, setAtlas] = useState<HTMLImageElement | null>(null);
+  const [atlas, setAtlas] = useState<Atlas | null>(null);
   const drawerTop = useMotionValue(0);
   const opacity = useMotionValue(0);
 
   useEffect(() => {
     if (!open) return;
 
+    const title = document.getElementById("artist-name");
+    let lastRoom = -1;
     let frame = 0;
     const followDrawer = () => {
       const drawer = drawerRef.current;
-      if (drawer) drawerTop.set(drawer.getBoundingClientRect().top);
+      if (drawer && figureRef.current) {
+        drawerTop.set(drawer.getBoundingClientRect().top);
+        // Use the drawer's resting position so dragging moves the figure without resizing it.
+        const titleBottom = Math.max(0, title?.getBoundingClientRect().bottom ?? 0);
+        const room = Math.max(0, Math.floor(window.innerHeight - drawer.offsetHeight - titleBottom - 24));
+        if (room !== lastRoom) {
+          figureRef.current.style.setProperty("--drawer-room", `${room}px`);
+          lastRoom = room;
+        }
+      }
       frame = requestAnimationFrame(followDrawer);
     };
     followDrawer();
@@ -37,19 +58,40 @@ export function DrawerMist({ drawerRef, open, reduceMotion, visible, onVisibilit
   }, [open, drawerRef, drawerTop]);
 
   useEffect(() => {
-    if (!open || atlas) return;
+    const figure = figureRef.current;
+    if (!open || !figure) return;
 
-    const image = new Image();
-    let cancelled = false;
-    image.src = atlasPath;
-    void image.decode().then(() => {
-      if (!cancelled) setAtlas(image);
-    }).catch(() => {
-      // The drawer stays usable if the decorative animation cannot load.
-    });
+    let requested: Variant | undefined;
+    const selectAtlas = () => {
+      const target = figure.clientHeight * window.devicePixelRatio;
+      if (target <= 0) return;
+      const variant = variants.find((candidate) => candidate.height >= target) ?? variants[variants.length - 1];
+      if (variant === requested) return;
+      // Keep the current sheet near a boundary during small viewport changes.
+      if (requested && variant.height < requested.height && target > variant.height * 0.9) return;
+      requested = variant;
 
-    return () => { cancelled = true; };
-  }, [open, atlas]);
+      const formed = variant === variants[variants.length - 1]
+        ? loadImage(data.formedPath).catch(() => null)
+        : null;
+      void Promise.all([loadImage(variant.atlasPath), formed]).then(([image, formed]) => {
+        if (requested === variant) {
+          setAtlas((previous) => previous?.variant === variant ? previous : { image, variant, formed });
+        }
+      }).catch(() => {
+        // Keep the current frame sheet if the replacement cannot load.
+      });
+    };
+
+    const observer = new ResizeObserver(selectAtlas);
+    observer.observe(figure);
+    window.addEventListener("resize", selectAtlas);
+    return () => {
+      requested = undefined;
+      observer.disconnect();
+      window.removeEventListener("resize", selectAtlas);
+    };
+  }, [open]);
 
   useEffect(() => {
     if (!open && reduceMotion) {
@@ -61,8 +103,9 @@ export function DrawerMist({ drawerRef, open, reduceMotion, visible, onVisibilit
 
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
-    if (!atlas || !context) return;
+    if (!atlas || !context || !canvas) return;
 
+    const { width, height, columns, frames } = atlas.variant;
     const from = progress.current;
     const target = open ? 0 : 1;
     let requestId = 0;
@@ -75,10 +118,14 @@ export function DrawerMist({ drawerRef, open, reduceMotion, visible, onVisibilit
       const index = Math.round(value * (frames - 1));
       if (index === lastFrame) return;
 
-      context.clearRect(0, 0, width, height);
+      context.clearRect(0, 0, canvas.width, canvas.height);
       const x = (index % columns) * width;
       const y = Math.floor(index / columns) * height;
-      context.drawImage(atlas, x, y, width, height, 0, 0, width, height);
+      if (index === 0 && atlas.formed) {
+        context.drawImage(atlas.formed, 0, 0, canvas.width, canvas.height);
+      } else {
+        context.drawImage(atlas.image, x, y, width, height, 0, 0, canvas.width, canvas.height);
+      }
       lastFrame = index;
     };
 
@@ -115,7 +162,7 @@ export function DrawerMist({ drawerRef, open, reduceMotion, visible, onVisibilit
       className="pointer-events-none fixed inset-x-0 top-0 z-[51]"
       style={{ y: drawerTop }}
     >
-      <div className="absolute bottom-full left-1/2 mb-2 aspect-[162/242] h-[min(10.5rem,22svh)] -translate-x-1/2">
+      <div ref={figureRef} className="absolute bottom-full left-1/2 mb-2 aspect-[2/3] h-[min(var(--drawer-figure-height),var(--drawer-room,100svh))] -translate-x-1/2">
         <motion.div
           data-slot="drawer-figure"
           className="relative h-full w-full origin-bottom"
@@ -130,8 +177,8 @@ export function DrawerMist({ drawerRef, open, reduceMotion, visible, onVisibilit
               ref={canvasRef}
               data-slot="drawer-mist"
               className="block h-full w-full [mask-image:linear-gradient(to_bottom,transparent,black_8%,black_92%,transparent)]"
-              width={width}
-              height={height}
+              width={atlas?.formed?.naturalWidth ?? atlas?.variant.width ?? variants[0].width}
+              height={atlas?.formed?.naturalHeight ?? atlas?.variant.height ?? variants[0].height}
             />
           </div>
         </motion.div>

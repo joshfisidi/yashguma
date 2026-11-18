@@ -91,7 +91,7 @@ export function StreamingServicesDrawer({ open, onOpenChange, mistVisible, onMis
         initial={false}
         animate={{ opacity: open ? 1 : 0 }}
         transition={{ type: "tween", duration: reduceMotion ? 0 : 0.28, ease: "easeOut" }}
-        className="border-[#a1cbd5]/30 bg-transparent text-[#d3e8ed] outline-hidden shadow-[0_-16px_64px_#0007,inset_0_1px_0_#c2f0ff33] [--drawer-headroom:6rem] sm:[--drawer-headroom:1.5rem] [--drawer-figure-height:min(10.5rem,22svh)] data-[vaul-drawer-direction=bottom]:max-h-[min(85svh,calc(100svh_-_var(--drawer-figure-height)_-_var(--drawer-headroom)))] data-[vaul-drawer-direction=bottom]:rounded-t-[2rem] [&_[data-vaul-handle]]:z-10 [&_[data-vaul-handle]]:h-1.5 [&_[data-vaul-handle]]:w-14"
+        className="border-[#a1cbd5]/30 bg-transparent text-[#d3e8ed] outline-hidden shadow-[0_-16px_64px_#0007,inset_0_1px_0_#c2f0ff33] [--drawer-headroom:6rem] sm:[--drawer-headroom:1.5rem] data-[vaul-drawer-direction=bottom]:max-h-[min(85svh,calc(100svh_-_var(--drawer-figure-height)_-_var(--drawer-headroom)))] data-[vaul-drawer-direction=bottom]:rounded-t-[2rem] [&_[data-vaul-handle]]:z-10 [&_[data-vaul-handle]]:h-1.5 [&_[data-vaul-handle]]:w-14"
       >
         <div aria-hidden="true" data-slot="drawer-glass" className="pointer-events-none absolute inset-0 overflow-hidden rounded-t-[inherit]">
           <LiquidGlass

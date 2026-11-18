@@ -1,7 +1,26 @@
 {
-  "atlasPath": "/drawer/yashguma-mist.webp",
-  "width": 162,
-  "height": 242,
-  "columns": 8,
-  "frames": 60
+  "variants": [
+    {
+      "width": 162,
+      "height": 242,
+      "columns": 8,
+      "frames": 60,
+      "atlasPath": "/drawer/yashguma-mist.webp"
+    },
+    {
+      "width": 270,
+      "height": 404,
+      "columns": 8,
+      "frames": 60,
+      "atlasPath": "/drawer/yashguma-mist-medium.webp"
+    },
+    {
+      "width": 432,
+      "height": 648,
+      "columns": 8,
+      "frames": 48,
+      "atlasPath": "/drawer/yashguma-mist-large.webp"
+    }
+  ],
+  "formedPath": "/drawer/yashguma-formed.webp"
 }
